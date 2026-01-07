@@ -11,7 +11,13 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 status](https://www.r-pkg.org/badges/version/brech)](https://CRAN.R-project.org/package=brech)
 <!-- badges: end -->
 
-The goal of brech is to …
+**B**ayesian **R**econstruction of **E**pidemic **C**ases &
+**H**ospitalizations (**BRECH**). Simulation and Bayesian fitting of
+stochastic epidemic models.
+
+*The package name comes from the Welsh word for “rash”*
+
+## Overview
 
 ## Installation
 
