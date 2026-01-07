@@ -1,0 +1,20 @@
+  params:
+    # natural history and transmission parameters
+    r_0: 25 # basic reproductive number
+    latent_period: 11.0 # mean, in days
+    infectious_period: 8.0 # mean, in days
+    ascertainment_delay: 2.5 # mean, in days
+    case_delay: 3 # mean, in days
+    
+  initial_states:
+    # initial number in each class
+    # total population is derived from this sum
+    S: 999
+    V: 0
+    E: 0
+    I: 1
+    R: 0
+  
+  sim_args:
+    # number of days to simulate
+    T: 10
