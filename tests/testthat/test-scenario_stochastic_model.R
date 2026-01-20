@@ -39,7 +39,7 @@ test_that("scenario_stochastic_model replicates states when only parameters are 
 test_that("scenario_stochastic_model replicates parameters when only states are provided", {
   sm <- list(
     initial_states = list(S = 60, I = 4),
-    params = c(beta = 0.5, gamma = 0.1)
+    params = list(beta = 0.5, gamma = 0.1)
   )
   class(sm) <- "stochastic_model"
 

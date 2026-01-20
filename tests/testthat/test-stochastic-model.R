@@ -111,7 +111,7 @@ test_that("run returns a data frame with time column", {
   )
 
   sm <- stochastic_model(reactions, sim)
-  sim_out <- run(sm)
+  sim_out <- run_sim(sm)
   expect_true(is.matrix(sim_out))
   expect_true(all(c("time","I") %in% colnames(sim_out)))
 })
@@ -128,4 +128,21 @@ test_that("interpolate_run_by_day interpolates correctly", {
   expect_true(all(c("time", "S", "I") %in% names(out)))
   expect_equal(out$time, 0:4)
   expect_equal(nrow(out), 5)
+})
+
+test_that("Adding params as a numeric vector returns an error", {
+
+  reactions <- list(
+    infection = list(
+      transition = c("I" = +1),
+      rate = function(x, p, t) p$beta
+    )
+  )
+  sim <- list(
+    initial_states = list(I = 0),
+    params = c(beta = 0.1),
+    sim_args = list(T = 2)
+  )
+
+  expect_error(stochastic_model(reactions, sim), "`params` must be a list")
 })

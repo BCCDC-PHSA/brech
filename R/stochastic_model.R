@@ -363,8 +363,12 @@ validate_reactions <- function(reactions) {
 validate_sim_scenario <- function(sim_scenario){
   for(name in c("initial_states","params")){
     if(!(name %in% names(sim_scenario))){
-      stop("sim_scenario must have '%s' list",name)
+      stop("sim_scenario must have '%s' list", name)
     }
+  }
+  # check that `params` is a list
+  if(typeof(sim_scenario$params)!= "list"){
+    stop("`params` must be a list")
   }
 
   return(TRUE)
@@ -460,7 +464,7 @@ print.stochastic_model <- function(x, ...) {
 #' @param tf maximum time
 #' @export
 #' @rdname stochastic_model
-run <- function(x,tf=NULL){
+run_sim <- function(x,tf=NULL){
   init_values <- unlist(x$initial_states)
   if(is.null(tf)){
     tf <- x$sim_args$T
@@ -712,7 +716,7 @@ abc_stochastic_model <- function(sm,priors,target,stat_func,
         if(!is.null(state)){
           m <- update_state(m, state)
         }
-        m <- run(m)
+        m <- run_sim(m)
         final_state <- m[nrow(m), -1]
         stat <- stat_func(m)
         progress_update()
@@ -875,7 +879,7 @@ projection_stochastic_model <- function(asm, project_time = 30,
       asm$model |>
         update_state(state) |>
         update_parameters(params=params) |>
-        run(tf=project_time) |>
+        run_sim(tf=project_time) |>
         interpolate_run_by_day() |>
         dplyr::bind_cols(as.data.frame(params))
     },

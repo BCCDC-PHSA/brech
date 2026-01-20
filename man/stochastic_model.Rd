@@ -2,14 +2,14 @@
 % Please edit documentation in R/stochastic_model.R
 \name{stochastic_model}
 \alias{stochastic_model}
-\alias{run}
+\alias{run_sim}
 \alias{update_parameters}
 \alias{update_state}
 \title{Create a stochastic model}
 \usage{
 stochastic_model(reactions, sim_scenario)
 
-run(x, tf = NULL)
+run_sim(x, tf = NULL)
 
 update_parameters(x, ..., params = list())
 

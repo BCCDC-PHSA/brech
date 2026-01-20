@@ -11,7 +11,7 @@ vaccinate_initial_conditions(sim_scenario, vaccine_rate)
 
 \item{vaccine_rate}{numeric proportion vaccinated. Can be a numeric
 vector if using age groups. If named then vaccinates according to each
-age group with format "S_{age_group}"}
+age group with format "S_\{age_group\}"}
 }
 \description{
 change vaccination coverage in initial conditions

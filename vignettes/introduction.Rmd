@@ -63,11 +63,11 @@ sm
 
 ```
 
-To run with default settings, just use the `run` function
+To run with default settings, just use the `run_sim` function
 
 ```{r}
 #| echo: false
-r <- run(sm)
+r <- run_sim(sm)
 r |> ggplot(aes(x=time,y=C)) + geom_line()
 ```
 
@@ -156,7 +156,7 @@ projections <- projection_stochastic_model(scenarios)
 plot(projections, state = "I")
 ```
 
-A flow chart of the dependency between defined S3 classes in the package is provided below. The base class is `stochastic_model` which defines the model events, rates, parameters and initial states. A `summary` of the object can be provided and a simulation can be drawn from the model using the function `run()`. Model fitting can be performed using the `abc_stochastic_model` or alternatively a scenario can be generated using the `scenario_stochastic_model` class. Finally a projection can be generated from either a scenario or model fit using `projection_stochastic_model`.
+A flow chart of the dependency between defined S3 classes in the package is provided below. The base class is `stochastic_model` which defines the model events, rates, parameters and initial states. A `summary` of the object can be provided and a simulation can be drawn from the model using the function `run_sim()`. Model fitting can be performed using the `abc_stochastic_model` or alternatively a scenario can be generated using the `scenario_stochastic_model` class. Finally a projection can be generated from either a scenario or model fit using `projection_stochastic_model`.
 
 ```{mermaid}
 flowchart TD
@@ -182,10 +182,13 @@ colnames(contact_matrix) <- age_groups
 print(contact_matrix)
 ```
 
-Next we use the `age_groups` and `contact_matrix` to populate the `reactions` list. To illustrate the code below provides a simple age-structured SIR model.
+Next we use the `age_groups` and `contact_matrix` to populate the `reactions` list. To illustrate the code below provides a simple age-structured SIR model. We encapsulate this inside a
+function to ensure that variables such as `age_groups` can be referenced later.
 
 ```{r}
-reactions <- list()
+create_custom_reactions <- function(contact_matrix){
+  age_groups <- colnames(contact_matrix)
+  reactions <- list()
   for (i in seq_along(age_groups)){
         age_group <- age_groups[i]
         ###########################
@@ -234,14 +237,19 @@ reactions <- list()
           "rate" = rate(age_group)
         )
       
-    }
+  }
+  return(reactions)
+}
+
+reactions <- create_custom_reactions(contact_matrix)
+
 ```
 
 We then apply these reactions to construct a `stochastic_model` object. We use the function `create_age_initial_conditions` to convert the initial conditions from a vector format to the format required for the object.
 
 ```{r}
 age_scenario <- list(
-  params = list(beta = 0.09, gamma = 0.2, N = 1000),
+  params = list(beta = 0.5, gamma = 0.2, N = 1000),
   initial_states = list(
     S = c(200, 800),
     V = c(0, 0),
@@ -263,7 +271,7 @@ As before we can run this simulation and plot
 
 ```{r}
 r <- sm |>
-    brech::run() |>
+    run_sim() |>
     as.data.frame() |>
     tidyr::pivot_longer(
       cols = tidyselect::starts_with("I_"),
@@ -367,7 +375,7 @@ age_scenario <- age_scenario |>
 
 sm <- stochastic_model(reactions,age_scenario)
 
-r <- brech::run(sm) |> as.data.frame()
+r <- run_sim(sm) |> as.data.frame()
 
 stat_func <- function(m){
   #' get total cases by age group
@@ -385,7 +393,25 @@ priors <- tibble("beta" = pmax(0,rnorm(100,mean=0.1,sd=0.1)))
 
 res <- abc_stochastic_model(sm,priors,cumulative_cases,stat_func,
                             states = states)
+
+plot(res,"beta")
 ```
 
 ## Using `multisession` and `progressr`
+
+Both `abc_stochastic_model` and `projection_stochastic_model` can be 
+parrallelized using the `future` package together with [`progressr`](https://progressr.futureverse.org/) to generate a progress bar. For more complex and realistic models these will be 
+essential to speed up computation and monitor progress. An example of its use
+with two workers is provided below,
+
+```{r, eval=FALSE}
+# set up multisession environment
+plan(multisession, workers = 2)
+age_reactions <- build_age_reactions(contact_matrix)
+# run projections in parrallel
+progressr::with_progress({
+  state_projections <- projection_stochastic_model(example_scenario)
+})
+```
+
 

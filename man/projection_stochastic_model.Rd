@@ -93,7 +93,7 @@ Runs forward projections from the posterior draws of a fitted
 using region-specific states and parameter sets. Each simulation is seeded
 for reproducibility and run in parallel.
 
-If state doesn't exist e.g. "I" but has states "I_{age}" then
+If state doesn't exist e.g. "I" but has states "I_\{age\}" then
 will sum over all states first before plotting
 
 take the difference of column(s) that match on state \code{state}. This is
