@@ -9,6 +9,8 @@ create_age_initial_conditions(sim_scenario, age_groups)
 }
 \arguments{
 \item{sim_scenario}{output of \code{load_model_params}}
+
+\item{age_groups}{vector of age group labels}
 }
 \description{
 Convert a vector of each state into a labeled state using

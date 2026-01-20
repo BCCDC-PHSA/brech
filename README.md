@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# brech
+# brech <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
 
@@ -19,6 +19,13 @@ stochastic epidemic models.
 
 ## Overview
 
+This package was designed with the main purpose of rapid construction
+and prototyping of stochastic infectious disease models in a small (~100
+individuals) to medium (~1000 individuals) size settings. This ease of
+construction does come at the cost of computational efficiency and so
+would not be recommended for larger settings or with more complicated
+dynamics with multiple rates.
+
 ## Installation
 
 You can install the development version of brech from
@@ -31,33 +38,71 @@ pak::pak("BCCDC-PHSA/brech")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+The package’s base class `stochastic_model` defines the stochastic
+processes’ events, rates, parameters, and initial states. The example
+below generates a simple process where infections (`I`) are generated at
+a constant rate (`beta`)
 
 ``` r
-# library(brech)
-## basic example code
+library(brech)
+
+reactions <- list(
+  infection = list(
+    transition = c("I" = +1),
+    rate = function(x,p,t){p$beta})
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I = 0),
+  sim_args = list(T = 100)
+)
+sm <- stochastic_model(reactions,example_scenario)
+
+print(sm)
+#> Stochastic Model 
+#> ================== 
+#> 
+#> Initial Values:
+#>   I : 0
+#> Parameters:
+#>   beta : 0.1
+#> Simulation arguments:
+#>   T : 100
+#> Reactions:
+#>  - infection:
+#>    Transition: [I +1]
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+We can generate a realization of this process using the function
+`run_sim` and plot the result
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+library(ggplot2)
+
+sim <- run_sim(sm)
+sim |>
+  ggplot(aes(x=time,y=I)) +
+  geom_line()
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+<img src="man/figures/README-simulation-1.png" width="100%" />
 
-You can also embed plots, for example:
+The package provides more tools for scenario modelling and fitting. See
+the Introduction vignette for more details by running the following code
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+``` r
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+vignette("introduction", package = "brech")
+```
+
+## Package structure
+
+A flow chart of the dependency between defined S3 classes in the package
+is provided below. The base class is `stochastic_model` which defines
+the model events, rates, parameters and initial states. A `summary` of
+the object can be provided and a simulation can be drawn from the model
+using the function `run_sim()`. Model fitting can be performed using the
+`abc_stochastic_model` or alternatively a scenario can be generated
+using the `scenario_stochastic_model` class. Finally a projection can be
+generated from either a scenario or model fit using
+`projection_stochastic_model`.

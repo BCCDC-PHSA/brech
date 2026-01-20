@@ -12,31 +12,31 @@
 #'
 #' @export
 plot_contact_matrix <- function(matrix_data,levels=NULL){
-  x <- y <- fill <- NULL
-  g <- dplyr::as_tibble(matrix_data,rownames="x") %>%
+  x <- y <- fill <- value <- NULL
+  g <- dplyr::as_tibble(matrix_data,rownames="x") |>
     tidyr::pivot_longer(-x, names_to = "y", values_to = "value")
   if(!is.null(levels)){
-    g <- g %>%
-      mutate(
+    g <- g |>
+      dplyr::mutate(
         x = forcats::fct_relevel(x,levels),
         y = forcats::fct_relevel(y,levels)
       )
   }
-  
-  g <- g %>%
+
+  g <- g |>
     ggplot2::ggplot(ggplot2::aes(x, y, fill = value)) +
     ggplot2::geom_tile() +
     ggplot2::scale_fill_gradient(low = "white", high = "blue") +
     ggplot2::theme_minimal() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
     ggplot2::labs(fill="Contact rate",x="",y="")
   return(g)
 }
 
 #' Add Labeled Bars to a ggplot Object by Age Group
 #'
-#' This function enhances a ggplot object by adding bars with labels indicating 
-#' positive values, formatted with a steel blue fill color. It also adjusts the 
+#' This function enhances a ggplot object by adding bars with labels indicating
+#' positive values, formatted with a steel blue fill color. It also adjusts the
 #' y-axis scaling and applies a classic theme.
 #'
 #' @param g A ggplot object to which the bars and labels will be added.
@@ -56,7 +56,8 @@ plot_contact_matrix <- function(matrix_data,levels=NULL){
 #'
 #' @export
 add_labeled_bars_age_group <- function(g,label="positive"){
-  g <- g + 
+  .data <- NULL
+  g <- g +
   ggplot2::geom_bar(stat="identity",fill="steelblue") +
     ggplot2::geom_text(colour = "white", size = 3.5,
               ggplot2::aes(label = .data[[label]]),
@@ -64,6 +65,6 @@ add_labeled_bars_age_group <- function(g,label="positive"){
     ggplot2::scale_y_continuous(expand=c(0,0)) +
     ggplot2::theme_classic() +
     ggplot2::labs(x="age group")
-  
+
   return(g)
 }

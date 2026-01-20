@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# brech
+# brech <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -26,6 +26,12 @@ knitr::opts_chunk$set(
 
 ## Overview
 
+This package was designed with the main purpose of rapid construction and 
+prototyping of stochastic infectious disease models in a small (~100 individuals) to 
+medium (~1000 individuals) size settings. This ease of construction does come at
+the cost of computational efficiency and so would not be recommended for larger
+settings or with more complicated dynamics with multiple rates. 
+
 ## Installation
 
 You can install the development version of brech from [GitHub](https://github.com/) with:
@@ -37,25 +43,49 @@ pak::pak("BCCDC-PHSA/brech")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+The package's base class `stochastic_model` defines the stochastic processes' 
+events, rates, parameters, and initial states. The example below generates
+a simple process where infections (`I`) are generated at a constant rate (`beta`)
 
 ```{r example}
-# library(brech)
-## basic example code
+library(brech)
+
+reactions <- list(
+  infection = list(
+    transition = c("I" = +1),
+    rate = function(x,p,t){p$beta})
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I = 0),
+  sim_args = list(T = 100)
+)
+sm <- stochastic_model(reactions,example_scenario)
+
+print(sm)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+We can generate a realization of this process using the function `run_sim` and
+plot the result
 
-```{r cars}
-summary(cars)
+```{r simulation}
+library(ggplot2)
+
+sim <- run_sim(sm)
+sim |>
+  ggplot(aes(x=time,y=I)) +
+  geom_line()
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+The package provides more tools for scenario modelling and fitting. See the 
+Introduction vignette for more details by running the following code
 
-You can also embed plots, for example:
+```{r, eval = FALSE}
 
-```{r pressure, echo = FALSE}
-plot(pressure)
+vignette("introduction", package = "brech")
+
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+## Package structure
+
+A flow chart of the dependency between defined S3 classes in the package is provided below. The base class is `stochastic_model` which defines the model events, rates, parameters and initial states. A `summary` of the object can be provided and a simulation can be drawn from the model using the function `run_sim()`. Model fitting can be performed using the `abc_stochastic_model` or alternatively a scenario can be generated using the `scenario_stochastic_model` class. Finally a projection can be generated from either a scenario or model fit using `projection_stochastic_model`.

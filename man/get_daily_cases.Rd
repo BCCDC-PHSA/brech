@@ -29,9 +29,9 @@ whole-number day. It then computes the number of incident cases as the first dif
 of the interpolated values. The first day is assigned 0 new cases by default.
 }
 \examples{
-sim_data <- tibble::tibble(
-  time = c(0, 0.1, 0.9, 1.4, 2.3, 3.7),
+sim_data <- as.matrix(dplyr::tibble(
+  time = c(0, 0.1, 0.9, 1.4, 2.3, 3.8),
   C = c(0, 1, 5, 7, 10, 15)
-)
+))
 get_daily_cases(sim_data)
 }

@@ -74,6 +74,7 @@ vaccinate_initial_conditions <- function(sim_scenario,vaccine_rate){
 #' Convert a vector of each state into a labeled state using
 #' `age_groups` labels
 #' @param sim_scenario output of `load_model_params`
+#' @param age_groups vector of age group labels
 #' @examples
 #' sim_scenario <- list(
 #'   "initial_states" = list(
@@ -122,7 +123,7 @@ build_age_reactions <- function(contact_matrix){
           trans[paste0("INC_",age_group)] <- +1
           trans
         }
-        rate <-
+        detectable_infection_rate <-
           function(i,age_group){
             force(i)
             force(age_group)
@@ -135,7 +136,7 @@ build_age_reactions <- function(contact_matrix){
           }
         reactions[[paste0("detectable_infection_",age_group)]] <- list(
           "transition"=transition(),
-          "rate" = rate(i,age_group)
+          "rate" = detectable_infection_rate(i,age_group)
         )
         ########################################
         #  undetectable infection transitions  #
@@ -147,7 +148,7 @@ build_age_reactions <- function(contact_matrix){
           trans[paste0("INC_",age_group)] <- +1
           trans
         }
-        rate <-
+        undetectable_infection_rate <-
           function(i,age_group){
             force(i)
             force(age_group)
@@ -160,7 +161,7 @@ build_age_reactions <- function(contact_matrix){
           }
         reactions[[paste0("undetectable_infection_",age_group)]] <- list(
           "transition"=transition(),
-          "rate" = rate(i,age_group)
+          "rate" = undetectable_infection_rate(i,age_group)
         )
         ############################
         #  incubation transitions  #
@@ -171,7 +172,7 @@ build_age_reactions <- function(contact_matrix){
           trans[paste0("I_",age_group)] <- + 1
           trans
         }
-        rate <-
+        incubation_rate <-
         function(age_group){
           force(age_group)
           function(x, p, t) {
@@ -181,7 +182,7 @@ build_age_reactions <- function(contact_matrix){
         }
         reactions[[paste0("incubation_",age_group)]] <- list(
           "transition"=transition(),
-          "rate" = rate(age_group)
+          "rate" = incubation_rate(age_group)
         )
         ##############################
         #    recovery transitions    #
@@ -192,7 +193,7 @@ build_age_reactions <- function(contact_matrix){
           trans[paste0("R_",age_group)] <- + 1
           trans
         }
-        rate <-
+        recovery_rate <-
         function(age_group){
           force(age_group)
           function(x, p, t) {
@@ -202,7 +203,7 @@ build_age_reactions <- function(contact_matrix){
         }
         reactions[[paste0("recovery_",age_group)]] <- list(
           "transition"=transition(),
-          "rate" = rate(age_group)
+          "rate" = recovery_rate(age_group)
         )
         ##############################
         #        case detection      #
@@ -213,7 +214,7 @@ build_age_reactions <- function(contact_matrix){
           trans[paste0("D_",age_group)] <- - 1
           trans
         }
-        rate <-
+        case_detection_rate <-
         function(age_group){
           force(age_group)
           function(x, p, t) {
@@ -223,7 +224,7 @@ build_age_reactions <- function(contact_matrix){
         }
         reactions[[paste0("case_detection_",age_group)]] <- list(
           "transition"=transition(),
-          "rate" = rate(age_group)
+          "rate" = case_detection_rate(age_group)
         )
         ##############################
         #              PEP           #
@@ -234,7 +235,7 @@ build_age_reactions <- function(contact_matrix){
           trans[paste0("R_",age_group)] <- + 1
           trans
         }
-        rate <-
+        pep_administered_rate <-
           function(age_group){
             force(age_group)
             function(x, p, t) {
@@ -244,7 +245,7 @@ build_age_reactions <- function(contact_matrix){
           }
         reactions[[paste0("pep_administered_",age_group)]] <- list(
           "transition"=transition(),
-          "rate" = rate(age_group)
+          "rate" = pep_administered_rate(age_group)
         )
         ###############################
         #        hospitalization      #
@@ -255,7 +256,7 @@ build_age_reactions <- function(contact_matrix){
           trans[paste0("I_",age_group)] <- - 1
           trans
         }
-        rate <-
+        hospitalization_rate <-
           function(i, age_group){
             force(i)
             force(age_group)
@@ -267,7 +268,7 @@ build_age_reactions <- function(contact_matrix){
           }
         reactions[[paste0("hospitalization_",age_group)]] <- list(
           "transition"=transition(),
-          "rate" = rate(i, age_group)
+          "rate" = hospitalization_rate(i, age_group)
         )
 
     }
@@ -315,6 +316,7 @@ get_reactions_and_rates <- function(reactions){
 }
 
 #' constructor for `stochastic_model` class
+#' @noRd
 new_stochastic_model <- function(reactions,sim_scenario){
   rr <- get_reactions_and_rates(reactions)
   rr <- c(rr,sim_scenario)
@@ -489,7 +491,7 @@ run_sim <- function(x,tf=NULL){
 #'   S = c(1000, 900, 800, 600, 500),
 #'   I = c(1, 10, 50, 100, 90)
 #' )
-#' interpolate_states_by_day(mat)
+#' interpolate_run_by_day(mat)
 #'
 #' @export
 interpolate_run_by_day <- function(x) {
@@ -508,7 +510,7 @@ interpolate_run_by_day <- function(x) {
   }) |>
     purrr::list_cbind()
 
-  dplyr::tibble(time = time_range) %>%
+  dplyr::tibble(time = time_range) |>
     dplyr::bind_cols(interpolated)
 }
 
@@ -528,7 +530,7 @@ interpolate_run_by_day <- function(x) {
 #' sm <- update_parameters(sm,beta=0.2)
 #' }
 update_parameters <- function(x,...,params=list()){
-  args <- modifyList(params, list(...))
+  args <- utils::modifyList(params, list(...))
   for(param in names(args)){
     x$params[[param]] <- args[[param]]
   }
@@ -568,18 +570,20 @@ update_state <- function(x,state){
 #' of the interpolated values. The first day is assigned 0 new cases by default.
 #'
 #' @examples
-#' sim_data <- tibble::tibble(
-#'   time = c(0, 0.1, 0.9, 1.4, 2.3, 3.7),
+#' sim_data <- as.matrix(dplyr::tibble(
+#'   time = c(0, 0.1, 0.9, 1.4, 2.3, 3.8),
 #'   C = c(0, 1, 5, 7, 10, 15)
-#' )
+#' ))
 #' get_daily_cases(sim_data)
 #' @export
 get_daily_cases <- function(r){
+  C_interp <- NULL
   day <- daily_incidence <- NULL
+  times <- r[,"time"]
   cases <- rowSums(r[,startsWith(colnames(r),"C"),drop=FALSE])
-  dplyr::tibble(day = floor(min(r[,"time"])) : ceiling(max(r[,"time"]))) |>
+  dplyr::tibble(day = floor(min(times)) : ceiling(max(times))) |>
     dplyr::mutate(
-      C_interp = approx(x = r[,"time"], y = cases, xout = day, method = "linear")$y
+      C_interp = stats::approx(x = times, y = cases, xout = day, method = "linear")$y
     ) |>
     dplyr::mutate(
       daily_incidence = c(0, diff(C_interp))  # First day has no prior to diff from
@@ -631,8 +635,8 @@ plot_prior_posterior <- function(prior_values,posterior_values,true_value = NULL
     ) +
     ggplot2::theme_minimal() +
     ggplot2::theme(
-      text = element_text(size = 12),
-      plot.title = element_text(hjust = 0.5),
+      text = ggplot2::element_text(size = 12),
+      plot.title = ggplot2::element_text(hjust = 0.5),
       legend.position = "bottom"
     )
   return(g)
@@ -681,7 +685,7 @@ plot_prior_posterior <- function(prior_values,posterior_values,true_value = NULL
 #'   stochastic_model = my_model,
 #'   priors = priors,
 #'   target = target,
-#'   stat_func = function(sim) tibble(mean_infected = mean(sim$I)),
+#'   stat_func = function(sim) data.frame(mean_infected = mean(sim$I)),
 #'   tol = 0.2
 #' )
 #' }
@@ -755,12 +759,18 @@ abc_stochastic_model <- function(sm,priors,target,stat_func,
 }
 
 #' type of plot either "prior_posterior" or "simulations"
-#' @param asm An object of class \code{abc_stochastic_model}.
-#' @param param if `type` is "prior_posterior" then parameter to plot
-#' @param state if `type` is "simulations" then state to plot
+#' @param x An object of class \code{abc_stochastic_model}.
+#' @param ... list of additional plot arguments.
+#' `param` - if `type` is "prior_posterior" then parameter to plot
+#' `state` - if `type` is "simulations" then state to plot
 #' @export
-plot.abc_stochastic_model <- function(asm, param=NULL,
-                                      state=NULL){
+plot.abc_stochastic_model <- function(x, ...){
+
+  asm <- x
+  args <- list(...)
+  param <- args$param
+  state <- args$state
+
   if(!is.null(param)){
     plot_prior_posterior(dplyr::pull(asm$priors,param),
                          dplyr::pull(asm$posteriors,param),
@@ -768,7 +778,7 @@ plot.abc_stochastic_model <- function(asm, param=NULL,
   }else if(!is.null(state)){
     plot_projections(asm$simulation,state)
   }else{
-    stop(paste0("plot type ",type," not recognized"))
+    stop(paste0("plot type not recognized"))
   }
 }
 
@@ -865,7 +875,7 @@ projection_stochastic_model <- function(asm, project_time = 30,
     state_list <- plist(asm$states)
     project_params <- plist(asm$parameters)
   }else{
-    stop(paste0("Object of class ",class(sm)," not known."))
+    stop(paste0("Object of class ",class(asm)," not known."))
   }
 
   progress_update <- progressr::progressor(steps=length(project_params))
@@ -897,6 +907,7 @@ projection_stochastic_model <- function(asm, project_time = 30,
 #' @return An object of class \code{projection_stochastic_model}
 #' @export
 add_projection_date <- function(psm,start_date){
+  time <- NULL
   start_date <- lubridate::ymd(start_date)
   psm$projection <- psm$projection |>
     dplyr::mutate(date = start_date + lubridate::days(time))
@@ -909,15 +920,28 @@ add_projection_date <- function(psm,start_date){
 #' will sum over all states first before plotting
 #'
 #' @rdname projection_stochastic_model
-#' @param psm An object of class \code{projection_stochastic_model}
-#' @param state state to plot
-#' @param type either show individual trajectories "samples" or summarize "quantiles"
+#' @param x An object of class \code{projection_stochastic_model}
+#' @param ... other arguments including `state` state to plot, `"I"` by default
+#' and `type` either show individual trajectories "samples" or summarize "quantiles",
+#' `"quantiles"` by default
 #' @export
 plot.projection_stochastic_model <- function(
-    psm,
-    state="I",
-    type = "quantiles"
+    x,
+    ...
   ){
+
+  psm <- x
+  args <- list(...)
+  state <- args$state
+  type <- args$type
+
+  # default args
+  if(is.null(state)){
+    state <- "I"
+  }
+  if(is.null(type)){
+    type <- "quantiles"
+  }
 
   if(!(state %in% names(psm$projection))){
     projection <- collapse_states(psm)
@@ -938,7 +962,8 @@ plot.projection_stochastic_model <- function(
 #' @rdname projection_stochastic_model
 #'
 plot_projections <- function(projection,state){
-  time <- date <- q0.025 <- q0.5 <- q0.75 <- q0.975 <- NULL
+  time <- date <- q0.025 <- q0.25 <- q0.5 <- q0.75 <- q0.975 <- NULL
+  .data <- NULL
   probs <- c(0.025,0.25, 0.5, 0.75,0.975)
   time_col <- if("date" %in% colnames(projection)) "date" else "time"
   plot_data <- create_projection_quantiles(projection, probs = probs)
@@ -963,6 +988,7 @@ plot_projections <- function(projection,state){
 #'
 plot_projection_samples <- function(projection,state){
   time <- date <- q0.025 <- q0.5 <- q0.75 <- q0.975 <- NULL
+  group <- .data <- max_state <- NULL
   probs <- c(0.5)
   time_col <- if("date" %in% colnames(projection)) "date" else "time"
   median_data <- create_projection_quantiles(projection, probs = probs) |>
@@ -1002,7 +1028,8 @@ plot_projection_samples <- function(projection,state){
 #' }
 #' @export
 plot_projections_by_age_group <- function(projection,state){
-  age_group <- q0.025 <- q0.25 <- q0.5 <- q0.755 <- q0.975 <- NULL
+  age_group <- q0.025 <- q0.25 <- q0.5 <- q0.75 <- q0.975 <- NULL
+  .data <- NULL
   time_col <- if("date" %in% colnames(projection)) "date" else "time"
   projection |>
     tidyr::pivot_wider(id_cols=c(tidyselect::all_of(time_col),"age_group"),
@@ -1138,6 +1165,7 @@ collapse_states <- function(psm){
 #' @return tibble
 #' @export
 difference_of_states <- function(psm,state){
+  time <- sim_id <- NULL
   projection <- get_projection_dataframe(psm)
   projection |>
     dplyr::mutate(sim_id = cumsum(time == 0)) |>
@@ -1175,6 +1203,7 @@ difference_of_states <- function(psm,state){
 #' }
 #' @export
 reset_state <- function(psm, state, reset_time = 0){
+  time <- sim_id <- NULL
   projection <- get_projection_dataframe(psm)
   projection |>
     dplyr::mutate(sim_id = cumsum(time == 0)) |>

@@ -95,7 +95,7 @@ stat_func <- function(m){
 
 res <- abc_stochastic_model(sm,priors,daily_cases,stat_func)
 
-plot(res,"beta")
+plot(res,param = "beta")
 ```
 
 We can similarly fit to daily cases. Note that we need to exclude the first few days in the simulation where the variance in case incidence is too low. Fitting the incidence appears to improve the model fit with this small sample.
@@ -118,7 +118,7 @@ daily_cases <- stat_func(r)
 
 res <- abc_stochastic_model(sm,priors,daily_cases,stat_func)
 
-plot(res,"beta")
+plot(res, param = "beta")
 ```
 
 The fit also provides the final state of each simulation from the posterior which we can compare to our fitted data
@@ -352,7 +352,7 @@ sm <- sm |> update_parameters(beta = 0.1)
 # define scenario based on list of states
 example_scenario <- scenario_stochastic_model(sm, states = states)
 state_projections <- projection_stochastic_model(example_scenario)
-plot(state_projections, "I")
+plot(state_projections, state = "I")
 ```
 
 We can perform model fitting as before using the `states` as a prior in the model that it is sampled from. In the example below we generate some data with an initial distribution of vaccinated among children and adults and use the number of recovered in each age group as the summary function.
@@ -394,7 +394,7 @@ priors <- tibble("beta" = pmax(0,rnorm(100,mean=0.1,sd=0.1)))
 res <- abc_stochastic_model(sm,priors,cumulative_cases,stat_func,
                             states = states)
 
-plot(res,"beta")
+plot(res, param = "beta")
 ```
 
 ## Using `multisession` and `progressr`

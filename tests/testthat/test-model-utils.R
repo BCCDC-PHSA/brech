@@ -1,6 +1,5 @@
 library(testthat)
 library(yaml)
-library(here)
 
 test_that("load_model_params loads and transforms parameters correctly", {
   temp_yaml <- tempfile(fileext = ".yaml")

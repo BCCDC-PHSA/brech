@@ -9,13 +9,13 @@ rtruncnorm(n, mean, sd, low, high)
 \arguments{
 \item{n}{Integer. Number of samples to draw.}
 
+\item{mean}{Numeric. Mean of the normal distribution.}
+
+\item{sd}{Numeric. Standard deviation of the normal distribution.}
+
 \item{low}{Numeric. Lower truncation bound.}
 
 \item{high}{Numeric. Upper truncation bound.}
-
-\item{mu}{Numeric. Mean of the normal distribution.}
-
-\item{sigma}{Numeric. Standard deviation of the normal distribution.}
 }
 \value{
 A numeric vector of length \code{n} containing random draws from the truncated normal distribution.

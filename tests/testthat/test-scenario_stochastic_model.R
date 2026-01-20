@@ -1,5 +1,5 @@
 library(testthat)
-library(tibble)
+library(dplyr)
 
 test_that("scenario_stochastic_model returns correct structure", {
   sm <- list(

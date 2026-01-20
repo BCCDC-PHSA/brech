@@ -66,7 +66,7 @@ abc_result <- abc_stochastic_model(
   stochastic_model = my_model,
   priors = priors,
   target = target,
-  stat_func = function(sim) tibble(mean_infected = mean(sim$I)),
+  stat_func = function(sim) data.frame(mean_infected = mean(sim$I)),
   tol = 0.2
 )
 }

@@ -23,6 +23,6 @@ mat <- cbind(
   S = c(1000, 900, 800, 600, 500),
   I = c(1, 10, 50, 100, 90)
 )
-interpolate_states_by_day(mat)
+interpolate_run_by_day(mat)
 
 }

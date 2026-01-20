@@ -4,8 +4,8 @@
 #' specified lower and upper bounds.
 #'
 #' @param n Integer. Number of samples to draw.
-#' @param mu Numeric. Mean of the normal distribution.
-#' @param sigma Numeric. Standard deviation of the normal distribution.
+#' @param mean Numeric. Mean of the normal distribution.
+#' @param sd Numeric. Standard deviation of the normal distribution.
 #' @param low Numeric. Lower truncation bound.
 #' @param high Numeric. Upper truncation bound.
 #'

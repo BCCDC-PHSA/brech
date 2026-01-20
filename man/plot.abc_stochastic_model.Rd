@@ -4,14 +4,14 @@
 \alias{plot.abc_stochastic_model}
 \title{type of plot either "prior_posterior" or "simulations"}
 \usage{
-\method{plot}{abc_stochastic_model}(asm, param = NULL, state = NULL)
+\method{plot}{abc_stochastic_model}(x, ...)
 }
 \arguments{
-\item{asm}{An object of class \code{abc_stochastic_model}.}
+\item{x}{An object of class \code{abc_stochastic_model}.}
 
-\item{param}{if \code{type} is "prior_posterior" then parameter to plot}
-
-\item{state}{if \code{type} is "simulations" then state to plot}
+\item{...}{list of additional plot arguments.
+\code{param} - if \code{type} is "prior_posterior" then parameter to plot
+\code{state} - if \code{type} is "simulations" then state to plot}
 }
 \description{
 type of plot either "prior_posterior" or "simulations"

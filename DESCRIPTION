@@ -6,7 +6,9 @@ Authors@R:
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Suggests: 
+    here,
     knitr,
+    progressr,
     rmarkdown,
     testthat (>= 3.0.0),
     tidyr,
@@ -19,7 +21,12 @@ VignetteBuilder: knitr
 Imports: 
     abc,
     adaptivetau,
+    crayon,
     dplyr,
+    forcats,
     furrr,
     ggplot2,
-    purrr
+    lubridate,
+    purrr,
+    stringr,
+    yaml

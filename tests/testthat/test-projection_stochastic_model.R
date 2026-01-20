@@ -39,7 +39,7 @@ test_that("add_projection_date works correctly", {
 })
 
 test_that("collapse_states collapses prefixed states correctly", {
-  proj <- list("projection" = tibble::tibble(
+  proj <- list("projection" = dplyr::tibble(
     time = 0:2,
     I_1 = c(1, 2, 3),
     I_2 = c(2, 3, 4)
@@ -51,7 +51,7 @@ test_that("collapse_states collapses prefixed states correctly", {
 })
 
 test_that("create_age_group_column works with proper format", {
-  proj <- tibble::tibble(
+  proj <- dplyr::tibble(
     time = 0:1,
     C_0_4 = c(1, 2),
     C_5_17 = c(3, 4)
@@ -62,7 +62,7 @@ test_that("create_age_group_column works with proper format", {
 })
 
 test_that("difference_of_states returns differences by group", {
-  proj <- list("projection" = tibble::tibble(
+  proj <- list("projection" = dplyr::tibble(
     time = c(0, 1, 2, 0, 1, 2),
     C_0_4 = c(0,1, 2, 0, 1, 2),
     C_5_17 = c(0, 2, 4,  0, 2, 4)

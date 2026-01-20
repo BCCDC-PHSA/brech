@@ -19,7 +19,7 @@ projection_stochastic_model(asm, project_time = 30, seed = 123)
 
 add_projection_date(psm, start_date)
 
-\method{plot}{projection_stochastic_model}(psm, state = "I", type = "quantiles")
+\method{plot}{projection_stochastic_model}(x, ...)
 
 plot_projections(projection, state)
 
@@ -60,11 +60,15 @@ reproducibility. Defaults to \code{123}.}
 
 \item{start_date}{a date in yyyy-mm-dd format}
 
-\item{state}{character string e.g. "C"}
+\item{x}{An object of class \code{projection_stochastic_model}}
 
-\item{type}{either show individual trajectories "samples" or summarize "quantiles"}
+\item{...}{other arguments including \code{state} state to plot, \code{"I"} by default
+and \code{type} either show individual trajectories "samples" or summarize "quantiles",
+\code{"quantiles"} by default}
 
 \item{projection}{projection grouped using \link{projection_quantiles_by_age_group}}
+
+\item{state}{character string e.g. "C"}
 
 \item{probs}{vector of quantiles to plot}
 
