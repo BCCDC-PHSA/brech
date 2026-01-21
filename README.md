@@ -92,7 +92,7 @@ the Introduction vignette for more details by running the following code
 
 ``` r
 
-vignette("introduction", package = "brech")
+vignette("brech", package = "brech")
 ```
 
 ## Package structure

@@ -1,8 +1,8 @@
 ---
-title: "introduction"
+title: "brech"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{introduction}
+  %\VignetteIndexEntry{brech}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -400,15 +400,15 @@ plot(res, param = "beta")
 ## Using `multisession` and `progressr`
 
 Both `abc_stochastic_model` and `projection_stochastic_model` can be 
-parrallelized using the `future` package together with [`progressr`](https://progressr.futureverse.org/) to generate a progress bar. For more complex and realistic models these will be 
+parallelized using the `future` package together with [`progressr`](https://progressr.futureverse.org/) to generate a progress bar. For more complex and realistic models these will be 
 essential to speed up computation and monitor progress. An example of its use
 with two workers is provided below,
 
 ```{r, eval=FALSE}
 # set up multisession environment
 plan(multisession, workers = 2)
-age_reactions <- build_age_reactions(contact_matrix)
-# run projections in parrallel
+
+# run projections in parallel
 progressr::with_progress({
   state_projections <- projection_stochastic_model(example_scenario)
 })
