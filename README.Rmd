@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/brech)](https://CRAN.R-project.org/package=brech)
+[![R-CMD-check](https://github.com/BCCDC-PHSA/brech/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BCCDC-PHSA/brech/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 **B**ayesian **R**econstruction of **E**pidemic **C**ases & **H**ospitalizations (**BRECH**). Simulation and Bayesian fitting of stochastic epidemic models.
