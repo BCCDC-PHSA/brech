@@ -29,6 +29,12 @@ dynamics with multiple rates.
 
 ## Installation
 
+The latest version of brech can be installed from the CRAN with:
+
+``` r
+install.packages("brech")
+```
+
 You can install the development version of brech from
 [GitHub](https://github.com/) with:
 
