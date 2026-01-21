@@ -36,4 +36,5 @@ Imports:
     purrr,
     stringr,
     yaml
-URL: https://bccdc-phsa.github.io/brech/
+URL: https://bccdc-phsa.github.io/brech/, https://github.com/BCCDC-PHSA/brech
+BugReports: https://github.com/BCCDC-PHSA/brech/issues
