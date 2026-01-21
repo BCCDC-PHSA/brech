@@ -1,0 +1,98 @@
+# brech
+
+**B**ayesian **R**econstruction of **E**pidemic **C**ases &
+**H**ospitalizations (**BRECH**). Simulation and Bayesian fitting of
+stochastic epidemic models.
+
+*The package name comes from the Welsh word for “rash”*
+
+## Overview
+
+This package was designed with the main purpose of rapid construction
+and prototyping of stochastic infectious disease models in a small (~100
+individuals) to medium (~1000 individuals) size settings. This ease of
+construction does come at the cost of computational efficiency and so
+would not be recommended for larger settings or with more complicated
+dynamics with multiple rates.
+
+## Installation
+
+You can install the development version of brech from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("BCCDC-PHSA/brech")
+```
+
+## Example
+
+The package’s base class `stochastic_model` defines the stochastic
+processes’ events, rates, parameters, and initial states. The example
+below generates a simple process where infections (`I`) are generated at
+a constant rate (`beta`)
+
+``` r
+library(brech)
+
+reactions <- list(
+  infection = list(
+    transition = c("I" = +1),
+    rate = function(x,p,t){p$beta})
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I = 0),
+  sim_args = list(T = 100)
+)
+sm <- stochastic_model(reactions,example_scenario)
+
+print(sm)
+#> Stochastic Model 
+#> ================== 
+#> 
+#> Initial Values:
+#>   I : 0
+#> Parameters:
+#>   beta : 0.1
+#> Simulation arguments:
+#>   T : 100
+#> Reactions:
+#>  - infection:
+#>    Transition: [I +1]
+```
+
+We can generate a realization of this process using the function
+`run_sim` and plot the result
+
+``` r
+library(ggplot2)
+
+sim <- run_sim(sm)
+sim |>
+  ggplot(aes(x=time,y=I)) +
+  geom_line()
+```
+
+![](reference/figures/README-simulation-1.png)
+
+The package provides more tools for scenario modelling and fitting. See
+the Introduction vignette for more details by running the following code
+
+``` r
+
+vignette("brech", package = "brech")
+```
+
+## Package structure
+
+A flow chart of the dependency between defined S3 classes in the package
+is provided below. The base class is `stochastic_model` which defines
+the model events, rates, parameters and initial states. A `summary` of
+the object can be provided and a simulation can be drawn from the model
+using the function
+[`run_sim()`](https://bccdc-phsa.github.io/brech/reference/stochastic_model.md).
+Model fitting can be performed using the `abc_stochastic_model` or
+alternatively a scenario can be generated using the
+`scenario_stochastic_model` class. Finally a projection can be generated
+from either a scenario or model fit using `projection_stochastic_model`.

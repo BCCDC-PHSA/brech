@@ -1,0 +1,9 @@
+pandoc: 3.1.11
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  brech: brech.html
+last_built: 2026-01-21T18:03Z
+urls:
+  reference: https://bccdc-phsa.github.io/brech/reference
+  article: https://bccdc-phsa.github.io/brech/articles

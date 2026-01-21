@@ -1,0 +1,186 @@
+# brech
+
+**B**ayesian **R**econstruction of **E**pidemic **C**ases &
+**H**ospitalizations (**BRECH**). Simulation and Bayesian fitting of
+stochastic epidemic models.
+
+*The package name comes from the Welsh word for “rash”*
+
+## Overview
+
+This package was designed with the main purpose of rapid construction
+and prototyping of stochastic infectious disease models in a small (~100
+individuals) to medium (~1000 individuals) size settings. This ease of
+construction does come at the cost of computational efficiency and so
+would not be recommended for larger settings or with more complicated
+dynamics with multiple rates.
+
+## Installation
+
+You can install the development version of brech from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("BCCDC-PHSA/brech")
+```
+
+## Example
+
+The package’s base class `stochastic_model` defines the stochastic
+processes’ events, rates, parameters, and initial states. The example
+below generates a simple process where infections (`I`) are generated at
+a constant rate (`beta`)
+
+``` r
+library(brech)
+
+reactions <- list(
+  infection = list(
+    transition = c("I" = +1),
+    rate = function(x,p,t){p$beta})
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I = 0),
+  sim_args = list(T = 100)
+)
+sm <- stochastic_model(reactions,example_scenario)
+
+print(sm)
+#> Stochastic Model 
+#> ================== 
+#> 
+#> Initial Values:
+#>   I : 0
+#> Parameters:
+#>   beta : 0.1
+#> Simulation arguments:
+#>   T : 100
+#> Reactions:
+#>  - infection:
+#>    Transition: [I +1]
+```
+
+We can generate a realization of this process using the function
+`run_sim` and plot the result
+
+``` r
+library(ggplot2)
+
+sim <- run_sim(sm)
+sim |>
+  ggplot(aes(x=time,y=I)) +
+  geom_line()
+```
+
+![](reference/figures/README-simulation-1.png)
+
+The package provides more tools for scenario modelling and fitting. See
+the Introduction vignette for more details by running the following code
+
+``` r
+
+vignette("brech", package = "brech")
+```
+
+## Package structure
+
+A flow chart of the dependency between defined S3 classes in the package
+is provided below. The base class is `stochastic_model` which defines
+the model events, rates, parameters and initial states. A `summary` of
+the object can be provided and a simulation can be drawn from the model
+using the function
+[`run_sim()`](https://bccdc-phsa.github.io/brech/reference/stochastic_model.md).
+Model fitting can be performed using the `abc_stochastic_model` or
+alternatively a scenario can be generated using the
+`scenario_stochastic_model` class. Finally a projection can be generated
+from either a scenario or model fit using `projection_stochastic_model`.
+
+# Package index
+
+## All functions
+
+- [`abc_stochastic_model()`](https://bccdc-phsa.github.io/brech/reference/abc_stochastic_model.md)
+  : Approximate Bayesian Computation for Stochastic Model
+
+- [`add_labeled_bars_age_group()`](https://bccdc-phsa.github.io/brech/reference/add_labeled_bars_age_group.md)
+  : Add Labeled Bars to a ggplot Object by Age Group
+
+- [`build_age_reactions()`](https://bccdc-phsa.github.io/brech/reference/build_age_reactions.md)
+  : get reaction list from number of age groups m and contact_matrix
+
+- [`calculate_age_structured_beta()`](https://bccdc-phsa.github.io/brech/reference/calculate_age_structured_beta.md)
+  : Using the next generation matrix approach, calculates beta based on
+  a fixed R0
+
+- [`create_age_initial_conditions()`](https://bccdc-phsa.github.io/brech/reference/create_age_initial_conditions.md)
+  :
+
+  Convert a vector of each state into a labeled state using `age_groups`
+  labels
+
+- [`get_daily_cases()`](https://bccdc-phsa.github.io/brech/reference/get_daily_cases.md)
+  : Compute Daily Incident Cases from Cumulative Simulation Output
+
+- [`get_reactions_and_rates()`](https://bccdc-phsa.github.io/brech/reference/get_reactions_and_rates.md)
+  : convert reactions list to transitions and rates
+
+- [`interpolate_run_by_day()`](https://bccdc-phsa.github.io/brech/reference/interpolate_run_by_day.md)
+  : Interpolate State Trajectories to Whole Days
+
+- [`load_model_params()`](https://bccdc-phsa.github.io/brech/reference/load_model_params.md)
+  : load model parameters
+
+- [`plot(`*`<abc_stochastic_model>`*`)`](https://bccdc-phsa.github.io/brech/reference/plot.abc_stochastic_model.md)
+  : type of plot either "prior_posterior" or "simulations"
+
+- [`plot_contact_matrix()`](https://bccdc-phsa.github.io/brech/reference/plot_contact_matrix.md)
+  : Plot a Contact Matrix
+
+- [`plot_prior_posterior()`](https://bccdc-phsa.github.io/brech/reference/plot_prior_posterior.md)
+  : Plot Prior and Posterior Distributions with Optional True Value
+
+- [`print(`*`<stochastic_model>`*`)`](https://bccdc-phsa.github.io/brech/reference/print.stochastic_model.md)
+  : Print method for stochastic_model objects
+
+- [`projection_stochastic_model()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`add_projection_date()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`plot(`*`<projection_stochastic_model>`*`)`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`plot_projections()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`plot_projection_samples()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`plot_projections_by_age_group()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`create_projection_quantiles()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`projection_quantiles_by_age_group()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`projection_by_age_group()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`create_age_group_column()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`collapse_states()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  [`difference_of_states()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+  : Project a Stochastic Model Forward in Time
+
+- [`reset_state()`](https://bccdc-phsa.github.io/brech/reference/reset_state.md)
+  : Convert cumulative state variables back to zero at a reference time
+
+- [`rtruncnorm()`](https://bccdc-phsa.github.io/brech/reference/rtruncnorm.md)
+  : Sample from a Truncated Normal Distribution
+
+- [`scenario_stochastic_model()`](https://bccdc-phsa.github.io/brech/reference/scenario_stochastic_model.md)
+  :
+
+  Create a set of scenarios that can be incorporated into
+  [`projection_stochastic_model()`](https://bccdc-phsa.github.io/brech/reference/projection_stochastic_model.md)
+
+- [`update_parameters()`](https://bccdc-phsa.github.io/brech/reference/stochastic_model.md)
+  [`update_state()`](https://bccdc-phsa.github.io/brech/reference/stochastic_model.md)
+  [`stochastic_model()`](https://bccdc-phsa.github.io/brech/reference/stochastic_model.md)
+  [`run_sim()`](https://bccdc-phsa.github.io/brech/reference/stochastic_model.md)
+  : update parameters for a stochastic_model
+
+- [`vaccinate_initial_conditions()`](https://bccdc-phsa.github.io/brech/reference/vaccinate_initial_conditions.md)
+  : change vaccination coverage in initial conditions
+
+# Articles
+
+### All vignettes
+
+- [brech](https://bccdc-phsa.github.io/brech/articles/brech.md):
