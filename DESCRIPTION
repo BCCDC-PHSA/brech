@@ -1,6 +1,6 @@
 Package: brech
 Title: Stochastic Modelling of Infectious Disease Outbreaks
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: 
     person("Mike", "Irvine", , "mike.irvine@bccdc.ca", role = c("aut", "cre", "cph"),
        comment = c(ORCID = "0000-0003-4785-8998"))
