@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Stochastic Modelling of Infectious Disease Outbreaks">
-<meta name="description" content="This package was designed with the main purpose of rapid construction and prototyping of stochastic infectious disease models in a small (~100 individuals) to medium (~1000 individuals) size settings. This ease of construction does come at the cost of computational efficiency and so would not be recommended for larger settings or with more complicated dynamics with multiple rates.">
-<meta property="og:description" content="This package was designed with the main purpose of rapid construction and prototyping of stochastic infectious disease models in a small (~100 individuals) to medium (~1000 individuals) size settings. This ease of construction does come at the cost of computational efficiency and so would not be recommended for larger settings or with more complicated dynamics with multiple rates.">
+<meta name="description" content="The rapid construction and prototyping of stochastic infectious disease models in small (~100 individuals) to medium (~1000 individuals) size settings. The package includes tools for defining model parameters, rates, and initial conditions along with model fitting and scenario projections. This ease of construction does come at the cost of computational efficiency and so would not be recommended for larger settings or with more complicated dynamics with multiple rates.">
+<meta property="og:description" content="The rapid construction and prototyping of stochastic infectious disease models in small (~100 individuals) to medium (~1000 individuals) size settings. The package includes tools for defining model parameters, rates, and initial conditions along with model fitting and scenario projections. This ease of construction does come at the cost of computational efficiency and so would not be recommended for larger settings or with more complicated dynamics with multiple rates.">
 <meta property="og:image" content="https://bccdc-phsa.github.io/brech/logo.png">
 </head>
 <body>
@@ -34,11 +34,13 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/brech.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/BCCDC-PHSA/brech/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -63,8 +65,11 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of brech from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>The latest version of brech can be installed from the CRAN with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"brech"</span><span class="op">)</span></span></code></pre></div>
+<p>You can install the development version of brech from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"BCCDC-PHSA/brech"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -72,7 +77,7 @@
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>The package’s base class <code>stochastic_model</code> defines the stochastic processes’ events, rates, parameters, and initial states. The example below generates a simple process where infections (<code>I</code>) are generated at a constant rate (<code>beta</code>)</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://bccdc-phsa.github.io/brech/">brech</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">reactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -101,7 +106,7 @@
 <span><span class="co">#&gt;  - infection:</span></span>
 <span><span class="co">#&gt;    Transition: [I +1]</span></span></code></pre></div>
 <p>We can generate a realization of this process using the function <code>run_sim</code> and plot the result</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/stochastic_model.html">run_sim</a></span><span class="op">(</span><span class="va">sm</span><span class="op">)</span></span>
@@ -110,7 +115,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-simulation-1.png" width="100%"></p>
 <p>The package provides more tools for scenario modelling and fitting. See the Introduction vignette for more details by running the following code</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"brech"</span>, package <span class="op">=</span> <span class="st">"brech"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -120,7 +125,15 @@
 <p>A flow chart of the dependency between defined S3 classes in the package is provided below. The base class is <code>stochastic_model</code> which defines the model events, rates, parameters and initial states. A <code>summary</code> of the object can be provided and a simulation can be drawn from the model using the function <code><a href="reference/stochastic_model.html">run_sim()</a></code>. Model fitting can be performed using the <code>abc_stochastic_model</code> or alternatively a scenario can be generated using the <code>scenario_stochastic_model</code> class. Finally a projection can be generated from either a scenario or model fit using <code>projection_stochastic_model</code>.</p>
 </div>
 </div>
-  </main><aside class="col-md-3"><div class="license">
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/BCCDC-PHSA/brech/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/BCCDC-PHSA/brech/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
