@@ -195,7 +195,9 @@ plot_projection_samples <- function(projection,state){
 #' @param projection projection grouped using [projection_quantiles_by_age_group]
 #' @param state state to plot
 #' @examples
-#' \dontrun{
+#' \donttest{
+#'
+#'   psm <- projection_stochastic_model(asm)
 #'   projection <- psm |> projection_quantiles_by_age_group("C")
 #'   plot_projections_by_age_group(projection,"C")
 #' }
@@ -367,7 +369,7 @@ difference_of_states <- function(psm,state){
 #'
 #' @return A `tibble` with the same structure as the original projection data frame
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Reset cumulative cases to 0 at time 10
 #' reset_state(psm = fitted_model, state = "C", reset_time = 10)
 #'

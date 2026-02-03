@@ -5,3 +5,4 @@
 * This is a new release.
 * Note refers to checking future file timestamps. This is only shown when 
 running R CMD locally and not present when run using Github Actions.
+* updated R version in DESCRIPTION to R >= 4.1.0

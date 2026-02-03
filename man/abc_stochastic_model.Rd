@@ -59,16 +59,25 @@ This function performs ABC by:
 Parallelization is handled using \code{furrr::future_map()}, allowing reproducible simulation across parameter sets using a fixed seed.
 }
 \examples{
-\dontrun{
+reactions <- list(
+  infection = list(
+  transition = c("I" = +1),
+  rate = function(x,p,t){ p$beta })
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I = 0),
+  sim_args = list(T = 10)
+)
+sm <- stochastic_model(reactions,example_scenario)
 priors <- expand.grid(beta = seq(0.1, 0.5, length.out = 10))
-target <- c(mean_infected = 50)
+target <- c(total_infected = 50)
 abc_result <- abc_stochastic_model(
-  stochastic_model = my_model,
+  sm,
   priors = priors,
   target = target,
-  stat_func = function(sim) data.frame(mean_infected = mean(sim$I)),
+  stat_func = function(sim) data.frame(total_infected = sim[nrow(sim), "I"]),
   tol = 0.2
 )
-}
 
 }

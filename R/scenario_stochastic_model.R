@@ -29,12 +29,12 @@ scenario_stochastic_model <- function(sm,parameters=NULL,states=NULL){
   if(is.null(states)){
     states <- as.data.frame(sm$initial_states)
     colnames(states) <- names(sm$initial_states)
-    states <- states[rep(row.names(states), times = nreps), ]
+    states <- states[rep(row.names(states), times = nreps), , drop = FALSE]
   }
   if(is.null(parameters)){
     parameters <- as.data.frame(sm$params)
     colnames(parameters) <- names(sm$params)
-    parameters <- parameters[rep(row.names(parameters), times = nreps), ]
+    parameters <- parameters[rep(row.names(parameters), times = nreps), , drop = FALSE]
   }
 
   structure(list("model" = sm, "parameters" = parameters, "states" = states),

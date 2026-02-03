@@ -112,7 +112,7 @@ fixed time frame, interpolated to daily resolution, and combined
 into a single projection data frame.
 }
 \examples{
-\dontrun{
+\donttest{
   projection <- psm |> projection_quantiles_by_age_group("C")
   plot_projections_by_age_group(projection,"C")
 }

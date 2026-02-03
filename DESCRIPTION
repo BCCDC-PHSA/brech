@@ -36,5 +36,7 @@ Imports:
     purrr,
     stringr,
     yaml
+Depends: 
+    R (>= 4.1.0)
 URL: https://bccdc-phsa.github.io/brech/, https://github.com/BCCDC-PHSA/brech
 BugReports: https://github.com/BCCDC-PHSA/brech/issues

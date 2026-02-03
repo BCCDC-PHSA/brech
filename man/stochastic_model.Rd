@@ -46,9 +46,19 @@ Create a stochastic model
 run stochastic model using adaptive tau set algorithm
 }
 \examples{
-\dontrun{
+reactions <- list(
+  infection = list(
+    transition = c("I" = +1),
+    rate = function(x,p,t){p$beta})
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I = 0),
+  sim_args = list(T = 10)
+)
+sm <- stochastic_model(reactions,example_scenario)
 sm <- update_parameters(sm,beta=0.2)
-}
+
 reactions <- list(
   infection = list(
     transition = c("I" = +1),

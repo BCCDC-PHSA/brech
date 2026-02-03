@@ -26,7 +26,7 @@ useful when wanting to compute cumulative changes from a particular time point
 in a simulation or projection.
 }
 \examples{
-\dontrun{
+\donttest{
 # Reset cumulative cases to 0 at time 10
 reset_state(psm = fitted_model, state = "C", reset_time = 10)
 
