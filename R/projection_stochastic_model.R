@@ -195,12 +195,22 @@ plot_projection_samples <- function(projection,state){
 #' @param projection projection grouped using [projection_quantiles_by_age_group]
 #' @param state state to plot
 #' @examples
-#' \donttest{
-#'
-#'   psm <- projection_stochastic_model(asm)
-#'   projection <- psm |> projection_quantiles_by_age_group("C")
-#'   plot_projections_by_age_group(projection,"C")
-#' }
+#' reactions <- list(
+#'   infection = list(
+#'     transition = c("I" = +1),
+#'     rate = function(x,p,t){p$beta})
+#' )
+#' example_scenario <- list(
+#'   params = list(beta = 0.1),
+#'   initial_states = list(I = 0),
+#'   sim_args = list(T = 10)
+#' )
+#' sm <- stochastic_model(reactions,example_scenario)
+#' parameters <- data.frame(beta = seq(0.1, 0.5, length.out = 10))
+#' asm <- scenario_stochastic_model(sm, parameters = parameters)
+#' psm <- projection_stochastic_model(asm)
+#' projection <- psm |> projection_quantiles_by_age_group("I")
+#' plot_projections_by_age_group(projection,"I")
 #' @export
 plot_projections_by_age_group <- function(projection,state){
   age_group <- q0.025 <- q0.25 <- q0.5 <- q0.75 <- q0.975 <- NULL
