@@ -13,6 +13,7 @@
 \alias{create_age_group_column}
 \alias{collapse_states}
 \alias{difference_of_states}
+\alias{reset_state}
 \title{Project a Stochastic Model Forward in Time}
 \usage{
 projection_stochastic_model(asm, project_time = 30, seed = 123)
@@ -23,7 +24,7 @@ add_projection_date(psm, start_date)
 
 plot_projections(projection, state)
 
-plot_projection_samples(projection, state)
+plot_projection_samples(psm, state)
 
 plot_projections_by_age_group(projection, state)
 
@@ -46,6 +47,8 @@ create_age_group_column(psm, state, index_cols = c("date", "time"))
 collapse_states(psm)
 
 difference_of_states(psm, state)
+
+reset_state(psm, state, reset_time = 0)
 }
 \arguments{
 \item{asm}{An object of class \code{abc_stochastic_model} or \code{scenario_stochastic_model}.}
@@ -56,7 +59,8 @@ difference_of_states(psm, state)
 \item{seed}{An integer used to seed the parallel simulations for
 reproducibility. Defaults to \code{123}.}
 
-\item{psm}{Object of class \code{projection_stochastic_model}}
+\item{psm}{An object of class \code{projection_stochastic_model}, or a compatible
+data structure as accepted by \code{get_projection_dataframe()}.}
 
 \item{start_date}{a date in yyyy-mm-dd format}
 
@@ -68,13 +72,17 @@ and \code{type} either show individual trajectories "samples" or summarize "quan
 
 \item{projection}{projection grouped using \link{projection_quantiles_by_age_group}}
 
-\item{state}{character string e.g. "C"}
+\item{state}{A character string specifying the prefix of the cumulative state variable
+to reset (e.g., \code{"C"} to match columns like \code{"C_[0,1)"}, \code{"C_[1,5)"}, etc.).}
 
 \item{probs}{vector of quantiles to plot}
 
 \item{by_cols}{vector of columns to group by}
 
 \item{index_cols}{columns to preserve defaults to \code{c("time","date")}}
+
+\item{reset_time}{A numeric value indicating the time at which to reset the cumulative
+values back to zero. Defaults to 0.}
 }
 \value{
 An object of class \code{projection_stochastic_model}, which is a list
@@ -85,11 +93,23 @@ posterior draws and days, including any parameter updates appended as columns.}
 
 An object of class \code{projection_stochastic_model}
 
-tibble
+A \code{ggplot} object.
+
+A \code{ggplot} object.
+
+A tibble with columns \code{by_cols}, \code{quantile}, and quantile values per variable.
+
+A tibble with \code{date}, \code{time}, \code{age_group}, \code{quantile}, \code{values}.
 
 tibble
 
-tibble
+A tibble in long format with \code{age_group} and the \code{state} column.
+
+A tibble with additional collapsed prefix columns
+
+A tibble with differenced columns per simulation trajectory
+
+A \code{tibble} with the same structure as the original projection data frame
 }
 \description{
 Runs forward projections from the posterior draws of a fitted
@@ -103,6 +123,11 @@ will sum over all states first before plotting
 take the difference of column(s) that match on state \code{state}. This is
 useful for any cumulative columns e.g. \code{INC} and \code{C} by converted them into
 the incidence and case incidence respectively
+
+For cumulative state variables such as cases (e.g., \verb{C_[0,1)}), this function
+resets their values to 0 at a specified reference time (default is 0). This is
+useful when wanting to compute cumulative changes from a particular time point
+in a simulation or projection.
 }
 \details{
 This function takes a fitted \code{abc_stochastic_model}, extracts the
@@ -111,9 +136,75 @@ posterior state and parameter sets, then runs simulations in parallel using
 fixed time frame, interpolated to daily resolution, and combined
 into a single projection data frame.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{plot(projection_stochastic_model)}: Plot projections (quantiles or sample trajectories).
+
+}}
+\section{Functions}{
+\itemize{
+\item \code{add_projection_date()}: Add date to projection using a \code{start_date}
+
+\item \code{plot_projections()}: Plot quantile bands (q2.5\%, q25\%, median, q75\%, q97.5\%) for a state.
+
+\item \code{plot_projection_samples()}: Plot individual sample trajectories, coloured by per-sample peak magnitude.
+
+\item \code{plot_projections_by_age_group()}: Faceted quantile plots by age group for a given state.
+
+\item \code{create_projection_quantiles()}: Compute per-time quantiles across simulations for all numeric columns.
+
+\item \code{projection_quantiles_by_age_group()}: Compute quantiles by age group for a state (e.g., \code{"C"}).
+
+\item \code{projection_by_age_group()}: Long-format projection tibble with an \code{age_group} column for a state prefix.
+
+\item \code{create_age_group_column()}: Create an \code{age_group} column by gathering state_AGE columns for a prefix state.
+
+\item \code{collapse_states()}: Sum age-stratified columns into their shared prefix (e.g., \verb{C_[*]} → \code{C}).
+
+\item \code{difference_of_states()}: Take first differences for all columns starting with a state prefix.
+
+\item \code{reset_state()}: Convert cumulative state variables back to zero at a reference time
+
+}}
 \examples{
-\donttest{
-  projection <- psm |> projection_quantiles_by_age_group("C")
-  plot_projections_by_age_group(projection,"C")
-}
+reactions <- list(
+  infection_1 = list(
+    transition = c("I_1" = +1),
+    rate = function(x,p,t){p$beta}
+  ),
+  infection_2 = list(
+    transition = c("I_2" = +1),
+    rate = function(x,p,t){0.5*p$beta}
+  )
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I_1 = 0, I_2 = 0),
+  sim_args = list(T = 10)
+)
+sm <- stochastic_model(reactions,example_scenario)
+parameters <- data.frame(beta = seq(0.1, 0.5, length.out = 10))
+asm <- scenario_stochastic_model(sm, parameters = parameters)
+psm <- projection_stochastic_model(asm)
+projection <- psm |> projection_quantiles_by_age_group("I")
+plot_projections_by_age_group(projection,"I")
+reactions <- list(
+  infection = list(
+    transition = c("I" = +1),
+    rate = function(x,p,t){p$beta}
+  )
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I = 0),
+  sim_args = list(T = 10)
+)
+sm <- stochastic_model(reactions,example_scenario)
+parameters <- data.frame(beta = seq(0.1, 0.5, length.out = 10))
+asm <- scenario_stochastic_model(sm, parameters = parameters)
+psm <- projection_stochastic_model(asm)
+
+# Reset cumulative cases to 0 at time 5
+reset_state(psm, state = "C", reset_time = 5)
+
 }
