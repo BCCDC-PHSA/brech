@@ -2,15 +2,18 @@
 % Please edit documentation in R/parameters_and_reactions.R
 \name{build_age_reactions}
 \alias{build_age_reactions}
-\title{get reaction list from number of age groups m and
-contact_matrix}
+\title{get reaction list for an age-structured SEIR model}
 \usage{
 build_age_reactions(contact_matrix)
 }
 \arguments{
 \item{contact_matrix}{matrix m x m}
 }
+\value{
+list of reactions
+}
 \description{
-get reaction list from number of age groups m and
-contact_matrix
+Construct reactions from number of age groups m and an m x m contact_matrix
+for an SEIR model with case detection, hospitalizations, and pre-exposure
+prophylaxis.
 }

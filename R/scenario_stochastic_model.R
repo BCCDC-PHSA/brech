@@ -8,13 +8,14 @@
 #' Create a set of scenarios that can
 #' be incorporated into [projection_stochastic_model()]
 #' @param sm Object of class \code{stochastic_model}.
-#' @param parameters A data frame or tibble of prior parameter values. Each row
+#' @param parameters A data frame or [tibble()] of prior parameter values. Each row
 #' should correspond to one simulation, and columns should match the parameter
 #' names expected by `update_parameters()`. If `NULL` then no parameters will
 #' be updated an are all inherited from `sm`
 #' @param states A data frame where each row represents an initial state. If
 #' `NULL` then this is generated from the initial states in `sm`
 #' @seealso [abc_stochastic_model()]
+#' @return A `scenario_stochastic_model` object
 #' @export
 scenario_stochastic_model <- function(sm,parameters=NULL,states=NULL){
   if(is.null(parameters) && is.null(states)){

@@ -6,6 +6,7 @@
 
 #' load model parameters
 #' @param file file path to yaml
+#' @return list of model parameters
 #' @export
 load_model_params <- function(file=NULL){
   if(is.null(file)){
@@ -40,6 +41,7 @@ load_model_params <- function(file=NULL){
 #' @param vaccine_rate numeric proportion vaccinated. Can be a numeric
 #'   vector if using age groups. If named then vaccinates according to each
 #' age group with format "S_\{age_group\}"
+#' @return list with same structure as output of `load_model_params`
 #' @export
 vaccinate_initial_conditions <- function(sim_scenario,vaccine_rate){
   age_groups <- names(vaccine_rate)
@@ -84,6 +86,7 @@ vaccinate_initial_conditions <- function(sim_scenario,vaccine_rate){
 #' )
 #' age_groups <- c("0-5","5-19","19+")
 #' create_age_initial_conditions(sim_scenario,age_groups)
+#' @return list with same structure as output of `load_model_params`
 #' @export
 create_age_initial_conditions <- function(sim_scenario,age_groups){
   initial_states <- sim_scenario$initial_states
@@ -98,9 +101,13 @@ create_age_initial_conditions <- function(sim_scenario,age_groups){
   return(sim_scenario)
 }
 
-#' get reaction list from number of age groups m and
-#' contact_matrix
+#' get reaction list for an age-structured SEIR model
+#' @description
+#' Construct reactions from number of age groups m and an m x m contact_matrix
+#' for an SEIR model with case detection, hospitalizations, and pre-exposure
+#' prophylaxis.
 #' @param contact_matrix matrix m x m
+#' @return list of reactions
 #' @export
 build_age_reactions <- function(contact_matrix){
   m <- ncol(contact_matrix)
@@ -283,7 +290,7 @@ build_age_reactions <- function(contact_matrix){
 #' @param contact_matrix An m x m contact matrix
 #' @param population_sizes An m vector of population size
 #' @param R0 numeric reproduction number
-#' @return numeric
+#' @return numeric of infectious rate beta
 #' @export
 calculate_age_structured_beta <- function(sm, contact_matrix, population_sizes, R0){
   # beta calculation based on R0

@@ -1,14 +1,35 @@
-##################################################
-##################################################
-##                                              ##
-##        stochastic_model functions            ##
-##                                              ##
-##################################################
-##################################################
+#' Create a stochastic model
+#' @param reactions list of state transitions. Each reaction is itself a list
+#' that requires a `transition` vector and a `rate` vector
+#' @param sim_scenario list that defines the scenario including `params`,
+#' `initial_states` and `sim_args` that must at least include simulation time
+#' `T`
+#' @name stochastic_model
+#' @examples
+#' reactions <- list(
+#'   infection = list(
+#'     transition = c("I" = +1),
+#'     rate = function(x,p,t){p$beta})
+#' )
+#' example_scenario <- list(
+#'   params = list(beta = 0.1),
+#'   initial_states = list(I = 0),
+#'   sim_args = list(T = 10)
+#' )
+#' stochastic_model(reactions,example_scenario)
+#'
+#' @export
+stochastic_model <- function(reactions,sim_scenario){
+  validate_sim_scenario(sim_scenario)
+  validate_reactions(reactions)
+  new_stochastic_model(reactions,sim_scenario)
+}
+
 
 #' convert reactions list to transitions and rates
 #' @param reactions list
 #' @return list of rates and transitions
+#' @noRd
 get_reactions_and_rates <- function(reactions){
   # General function to get vector of rates
   rates <- function(x, p, t) {
@@ -79,35 +100,12 @@ validate_sim_scenario <- function(sim_scenario){
   return(TRUE)
 }
 
-#' Create a stochastic model
-#' @param reactions list of state transitions. Each reaction is itself a list
-#' that requires a `transition` vector and a `rate` vector
-#' @param sim_scenario list that defines the scenario including `params`,
-#' `initial_states` and `sim_args` that must at least include simulation time
-#' `T`
-#' @name stochastic_model
-#' @examples
-#' reactions <- list(
-#'   infection = list(
-#'     transition = c("I" = +1),
-#'     rate = function(x,p,t){p$beta})
-#' )
-#' example_scenario <- list(
-#'   params = list(beta = 0.1),
-#'   initial_states = list(I = 0),
-#'   sim_args = list(T = 10)
-#' )
-#' stochastic_model(reactions,example_scenario)
-#'
-#' @export
-stochastic_model <- function(reactions,sim_scenario){
-  validate_sim_scenario(sim_scenario)
-  validate_reactions(reactions)
-  new_stochastic_model(reactions,sim_scenario)
-}
 
+
+#' @describeIn stochastic_model
 #' Print method for stochastic_model objects
 #'
+#' @description
 #' This function provides a formatted and colorized summary of a stochastic model,
 #' including initial values, parameters, and a list of reactions with their transitions
 #' and rate function arguments.
@@ -163,12 +161,11 @@ print.stochastic_model <- function(x, ...) {
 }
 
 
-
+#' @describeIn stochastic_model
 #' run stochastic model using adaptive tau set algorithm
 #' @param x An object of class \code{stochastic_model}.
 #' @param tf maximum time
 #' @export
-#' @rdname stochastic_model
 run_sim <- function(x,tf=NULL){
   init_values <- unlist(x$initial_states)
   if(is.null(tf)){
@@ -178,15 +175,56 @@ run_sim <- function(x,tf=NULL){
                                x$params, tf=tf)
 }
 
+#' @describeIn stochastic_model
+#' update parameters for a stochastic_model
+#' @param x An object of class \code{stochastic_model}.
+#' @param ... parameters to update
+#' @param params parameters to update passed in as a list
+#' @return An object of class \code{stochastic_model}.
+#' @export
+#' @examples
+#' reactions <- list(
+#'   infection = list(
+#'     transition = c("I" = +1),
+#'     rate = function(x,p,t){p$beta})
+#' )
+#' example_scenario <- list(
+#'   params = list(beta = 0.1),
+#'   initial_states = list(I = 0),
+#'   sim_args = list(T = 10)
+#' )
+#' sm <- stochastic_model(reactions,example_scenario)
+#' sm <- update_parameters(sm,beta=0.2)
+#'
+update_parameters <- function(x,...,params=list()){
+  args <- utils::modifyList(params, list(...))
+  for(param in names(args)){
+    x$params[[param]] <- args[[param]]
+  }
+  return(x)
+}
+
+#' @describeIn stochastic_model
+#' update initial state for a stochastic_model
+#' @param x An object of class \code{stochastic_model}.
+#' @param state data.frame
+#' @return An object of class \code{stochastic_model}.
+#' @export
+update_state <- function(x,state){
+  x$initial_states <- unlist(state)
+  return(x)
+}
+
+#' @describeIn stochastic_model
 #' Interpolate State Trajectories to Whole Days
 #'
 #' Converts a time-series data frame or matrix with continuous time points
-#' and one or more state columns into a tibble with daily interpolated values.
+#' and one or more state columns into a [tibble()] with daily interpolated values.
 #'
 #' @param x A matrix or data frame with a numeric column named "time"
 #'   and one or more state columns with arbitrary names. output of `run`
 #'
-#' @return A tibble with one row per whole day and interpolated values for each state.
+#' @return A [tibble()] with one row per whole day and interpolated values for each state.
 #'
 #' @examples
 #' mat <- cbind(

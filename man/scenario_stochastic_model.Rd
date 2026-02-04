@@ -10,13 +10,16 @@ scenario_stochastic_model(sm, parameters = NULL, states = NULL)
 \arguments{
 \item{sm}{Object of class \code{stochastic_model}.}
 
-\item{parameters}{A data frame or tibble of prior parameter values. Each row
+\item{parameters}{A data frame or \code{\link[=tibble]{tibble()}} of prior parameter values. Each row
 should correspond to one simulation, and columns should match the parameter
 names expected by \code{update_parameters()}. If \code{NULL} then no parameters will
 be updated an are all inherited from \code{sm}}
 
 \item{states}{A data frame where each row represents an initial state. If
 \code{NULL} then this is generated from the initial states in \code{sm}}
+}
+\value{
+A \code{scenario_stochastic_model} object
 }
 \description{
 Create a set of scenarios that can

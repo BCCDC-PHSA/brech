@@ -13,6 +13,9 @@ vaccinate_initial_conditions(sim_scenario, vaccine_rate)
 vector if using age groups. If named then vaccinates according to each
 age group with format "S_\{age_group\}"}
 }
+\value{
+list with same structure as output of \code{load_model_params}
+}
 \description{
 change vaccination coverage in initial conditions
 }

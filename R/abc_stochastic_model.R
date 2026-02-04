@@ -1,46 +1,4 @@
 
-#####
-##### Model fitting section
-#####
-
-#' update parameters for a stochastic_model
-#' @param x An object of class \code{stochastic_model}.
-#' @param ... parameters to update
-#' @param params parameters to update passed in as a list
-#' @return An object of class \code{stochastic_model}.
-#' @export
-#' @rdname stochastic_model
-#' @examples
-#' reactions <- list(
-#'   infection = list(
-#'     transition = c("I" = +1),
-#'     rate = function(x,p,t){p$beta})
-#' )
-#' example_scenario <- list(
-#'   params = list(beta = 0.1),
-#'   initial_states = list(I = 0),
-#'   sim_args = list(T = 10)
-#' )
-#' sm <- stochastic_model(reactions,example_scenario)
-#' sm <- update_parameters(sm,beta=0.2)
-#'
-update_parameters <- function(x,...,params=list()){
-  args <- utils::modifyList(params, list(...))
-  for(param in names(args)){
-    x$params[[param]] <- args[[param]]
-  }
-  return(x)
-}
-
-#' update initial state for a stochastic_model
-#' @param x An object of class \code{stochastic_model}.
-#' @param state data.frame
-#' @rdname stochastic_model
-#' @export
-update_state <- function(x,state){
-  x$initial_states <- unlist(state)
-  return(x)
-}
 
 
 #' Compute Daily Incident Cases from Cumulative Simulation Output
@@ -52,7 +10,7 @@ update_state <- function(x,state){
 #' @param r A data frame or matrix with columns `"time"` and `"C"`, representing
 #'   time (in continuous units) and cumulative number of cases, respectively.
 #'
-#' @return A tibble with two columns:
+#' @return A [tibble()] with two columns:
 #'   \describe{
 #'     \item{day}{Integer day values from the floor of the minimum time to the ceiling of the maximum time}
 #'     \item{daily_incidence}{Number of new cases per day, computed as the difference in interpolated cumulative cases}
@@ -142,10 +100,10 @@ plot_prior_posterior <- function(prior_values,posterior_values,true_value = NULL
 #' Runs an Approximate Bayesian Computation (ABC) procedure using a stochastic model and a set of prior parameter draws.
 #'
 #' @param sm An object of class \code{stochastic_model}.
-#' @param priors A data frame or tibble of prior parameter values. Each row should correspond to one simulation, and columns should match the parameter names expected by `update_parameters()`.
+#' @param priors A data frame or [tibble()] of prior parameter values. Each row should correspond to one simulation, and columns should match the parameter names expected by `update_parameters()`.
 #' @param target A named vector or data frame of observed summary statistics to match against simulated summary statistics.
-#' @param stat_func A function that computes summary statistics from a simulation result. Should accept a model object and return a named numeric vector or tibble row.
-#' @param states Optional. A data frame or tibble of initial states. Each row corresponds to a complete model state e.g. for an SIR model each row has three columns
+#' @param stat_func A function that computes summary statistics from a simulation result. Should accept a model object and return a named numeric vector or [tibble()] row.
+#' @param states Optional. A data frame or [tibble()] of initial states. Each row corresponds to a complete model state e.g. for an SIR model each row has three columns
 #' @param tol A numeric tolerance (between 0 and 1) for the ABC rejection algorithm. Defaults to 0.1.
 #' @param method A character string indicating the ABC method to use. Defaults to `"rejection"`. Passed directly to [abc::abc()].
 #' @param seed An integer specifying the random seed for reproducibility. Defaults to 123.
@@ -198,6 +156,7 @@ plot_prior_posterior <- function(prior_values,posterior_values,true_value = NULL
 #' @importFrom purrr pmap map reduce
 #' @importFrom dplyr bind_rows
 #' @importFrom abc abc
+#' @name abc_stochastic_model
 #' @export
 abc_stochastic_model <- function(sm,priors,target,stat_func,
                                  states=NULL,
@@ -238,10 +197,7 @@ abc_stochastic_model <- function(sm,priors,target,stat_func,
     purrr::reduce(dplyr::bind_rows)
   final_state <- purrr::map(lists_of_results, "final_state") |>
     purrr::reduce(dplyr::bind_rows)
-  # simulation <- purrr::map(lists_of_results, "simulation") |>
-  #   purrr::map(as.data.frame) |>
-  #   purrr::imap(~dplyr::mutate(.x, index = .y)) |>
-  #   dplyr::bind_rows()
+
 
 
 
@@ -252,21 +208,21 @@ abc_stochastic_model <- function(sm,priors,target,stat_func,
   final_state <- final_state[fit$region,]
   posteriors <- priors[fit$region,]
   indexes <- seq_len(length(fit$region))[fit$region]
-  # simulation <- simulation |> dplyr::filter(index %in% indexes)
 
   structure(list("model" = sm, "fit" = fit,
                  "priors" = priors, "posteriors" = posteriors,
                  "prior_predictive" = stat,
                  "state" = final_state),
-            #"projection" = simulation),
             class="abc_stochastic_model")
 }
 
-#' type of plot either "prior_posterior" or "simulations"
+#' @describeIn abc_stochastic_model
+#' Plot of either prior and posterior or projections
 #' @param x An object of class \code{abc_stochastic_model}.
 #' @param ... list of additional plot arguments.
 #' `param` - if `type` is "prior_posterior" then parameter to plot
 #' `state` - if `type` is "simulations" then state to plot
+#' @return A `ggplot` object
 #' @export
 plot.abc_stochastic_model <- function(x, ...){
 

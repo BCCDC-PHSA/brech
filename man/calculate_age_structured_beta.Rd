@@ -17,7 +17,7 @@ calculate_age_structured_beta(sm, contact_matrix, population_sizes, R0)
 \item{R0}{numeric reproduction number}
 }
 \value{
-numeric
+numeric of infectious rate beta
 }
 \description{
 Using the next generation matrix approach, calculates beta based on a fixed

@@ -11,7 +11,7 @@ get_daily_cases(r)
 time (in continuous units) and cumulative number of cases, respectively.}
 }
 \value{
-A tibble with two columns:
+A \code{\link[=tibble]{tibble()}} with two columns:
 \describe{
 \item{day}{Integer day values from the floor of the minimum time to the ceiling of the maximum time}
 \item{daily_incidence}{Number of new cases per day, computed as the difference in interpolated cumulative cases}

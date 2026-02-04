@@ -97,19 +97,19 @@ A \code{ggplot} object.
 
 A \code{ggplot} object.
 
-A tibble with columns \code{by_cols}, \code{quantile}, and quantile values per variable.
+A \code{\link[=tibble]{tibble()}} with columns \code{by_cols}, \code{quantile}, and quantile values per variable.
 
-A tibble with \code{date}, \code{time}, \code{age_group}, \code{quantile}, \code{values}.
+A \code{\link[=tibble]{tibble()}} with \code{date}, \code{time}, \code{age_group}, \code{quantile}, \code{values}.
 
-tibble
+\code{\link[=tibble]{tibble()}}
 
-A tibble in long format with \code{age_group} and the \code{state} column.
+A \code{\link[=tibble]{tibble()}} in long format with \code{age_group} and the \code{state} column.
 
-A tibble with additional collapsed prefix columns
+A \code{\link[=tibble]{tibble()}} with additional collapsed prefix columns
 
-A tibble with differenced columns per simulation trajectory
+A \code{\link[=tibble]{tibble()}} with columns of differences per simulation trajectory
 
-A \code{tibble} with the same structure as the original projection data frame
+A \code{\link[=tibble]{tibble()}} with the same structure as the original projection data frame
 }
 \description{
 Runs forward projections from the posterior draws of a fitted
@@ -155,7 +155,7 @@ into a single projection data frame.
 
 \item \code{projection_quantiles_by_age_group()}: Compute quantiles by age group for a state (e.g., \code{"C"}).
 
-\item \code{projection_by_age_group()}: Long-format projection tibble with an \code{age_group} column for a state prefix.
+\item \code{projection_by_age_group()}: Long-format projection \code{\link[=tibble]{tibble()}} with an \code{age_group} column for a state prefix.
 
 \item \code{create_age_group_column()}: Create an \code{age_group} column by gathering state_AGE columns for a prefix state.
 

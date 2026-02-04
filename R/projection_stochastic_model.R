@@ -136,7 +136,7 @@ plot.projection_stochastic_model <- function(
 #' @describeIn projection_stochastic_model
 #' Plot quantile bands (q2.5%, q25%, median, q75%, q97.5%) for a state.
 #'
-#' @param projection A projection tibble (e.g., `psm$projection`).
+#' @param projection A projection [tibble()] (e.g., `psm$projection`).
 #' @param state The state column to plot (e.g., `"I"`).
 #' @return A `ggplot` object.
 #' @export
@@ -165,7 +165,7 @@ plot_projections <- function(projection,state){
 #' @describeIn projection_stochastic_model
 #' Plot individual sample trajectories, coloured by per-sample peak magnitude.
 #'
-#' @param projection A projection tibble.
+#' @param projection A projection [tibble()].
 #' @param state The state column to plot.
 #' @return A `ggplot` object.
 #' @export
@@ -253,10 +253,10 @@ plot_projections_by_age_group <- function(projection,state){
 #' @describeIn projection_stochastic_model
 #' Compute per-time quantiles across simulations for all numeric columns.
 #'
-#' @param psm object of type \code{projection_stochastic_model} or tibble
+#' @param psm object of type \code{projection_stochastic_model} or [tibble()]
 #' @param probs vector of quantiles to plot
 #' @param by_cols vector of columns to group by
-#' @return A tibble with columns `by_cols`, `quantile`, and quantile values per variable.
+#' @return A [tibble()] with columns `by_cols`, `quantile`, and quantile values per variable.
 #' @export
 create_projection_quantiles <- function(
     psm,
@@ -280,9 +280,9 @@ create_projection_quantiles <- function(
 #' @describeIn projection_stochastic_model
 #' Compute quantiles by age group for a state (e.g., `"C"`).
 #'
-#' @param psm object of type \code{projection_stochastic_model} or tibble
+#' @param psm object of type \code{projection_stochastic_model} or [tibble()]
 #' @param state model state e.g. "C"
-#' @return A tibble with `date`, `time`, `age_group`, `quantile`, `values`.
+#' @return A [tibble()] with `date`, `time`, `age_group`, `quantile`, `values`.
 #' @export
 projection_quantiles_by_age_group <- function(psm,state,
                                               probs=c(0.025,0.25, 0.5, 0.75,0.975)
@@ -304,11 +304,11 @@ projection_quantiles_by_age_group <- function(psm,state,
 
 
 #' @describeIn projection_stochastic_model
-#' Long-format projection tibble with an `age_group` column for a state prefix.
+#' Long-format projection [tibble()] with an `age_group` column for a state prefix.
 #'
 #' @param psm  \code{projection_stochastic_model}
 #' @param state a model state e.g. "C" for cases
-#' @return tibble
+#' @return [tibble()]
 #' @export
 projection_by_age_group <- function(psm,state){
   projection <- get_projection_dataframe(psm)
@@ -320,10 +320,10 @@ projection_by_age_group <- function(psm,state){
 #' @describeIn projection_stochastic_model
 #' Create an `age_group` column by gathering state_AGE columns for a prefix state.
 #'
-#' @param psm a tibble from \code{projection_stochastic_model} or \code{projection_stochastic_model}
+#' @param psm a [tibble()] from \code{projection_stochastic_model} or \code{projection_stochastic_model}
 #' @param state a model state e.g. "C" for cases
 #' @param index_cols columns to preserve defaults to \code{c("time","date")}
-#' @return A tibble in long format with `age_group` and the `state` column.
+#' @return A [tibble()] in long format with `age_group` and the `state` column.
 #' @export
 create_age_group_column <- function(psm, state,
                                     index_cols = c("date","time")){
@@ -346,7 +346,7 @@ create_age_group_column <- function(psm, state,
 #' Sum age-stratified columns into their shared prefix (e.g., `C_[*]` → `C`).
 #
 #' @param psm Object of class \code{projection_stochastic_model}
-#' @return A tibble with additional collapsed prefix columns
+#' @return A [tibble()] with additional collapsed prefix columns
 #' @export
 collapse_states <- function(psm){
   projection <- get_projection_dataframe(psm)
@@ -380,7 +380,7 @@ collapse_states <- function(psm){
 #' the incidence and case incidence respectively
 #' @param psm Object of class \code{projection_stochastic_model}
 #' @param state character string e.g. "C"
-#' @return A tibble with differenced columns per simulation trajectory
+#' @return A [tibble()] with columns of differences per simulation trajectory
 #' @export
 difference_of_states <- function(psm,state){
   time <- sim_id <- NULL
@@ -411,7 +411,7 @@ difference_of_states <- function(psm,state){
 #' @param reset_time A numeric value indicating the time at which to reset the cumulative
 #' values back to zero. Defaults to 0.
 #'
-#' @return A `tibble` with the same structure as the original projection data frame
+#' @return A [tibble()] with the same structure as the original projection data frame
 #' @examples
 #' reactions <- list(
 #'   infection = list(

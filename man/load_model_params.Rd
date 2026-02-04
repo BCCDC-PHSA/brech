@@ -9,6 +9,9 @@ load_model_params(file = NULL)
 \arguments{
 \item{file}{file path to yaml}
 }
+\value{
+list of model parameters
+}
 \description{
 load model parameters
 }

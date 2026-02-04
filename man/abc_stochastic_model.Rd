@@ -2,6 +2,7 @@
 % Please edit documentation in R/abc_stochastic_model.R
 \name{abc_stochastic_model}
 \alias{abc_stochastic_model}
+\alias{plot.abc_stochastic_model}
 \title{Approximate Bayesian Computation for Stochastic Model}
 \usage{
 abc_stochastic_model(
@@ -14,23 +15,31 @@ abc_stochastic_model(
   method = "rejection",
   seed = 123
 )
+
+\method{plot}{abc_stochastic_model}(x, ...)
 }
 \arguments{
 \item{sm}{An object of class \code{stochastic_model}.}
 
-\item{priors}{A data frame or tibble of prior parameter values. Each row should correspond to one simulation, and columns should match the parameter names expected by \code{update_parameters()}.}
+\item{priors}{A data frame or \code{\link[=tibble]{tibble()}} of prior parameter values. Each row should correspond to one simulation, and columns should match the parameter names expected by \code{update_parameters()}.}
 
 \item{target}{A named vector or data frame of observed summary statistics to match against simulated summary statistics.}
 
-\item{stat_func}{A function that computes summary statistics from a simulation result. Should accept a model object and return a named numeric vector or tibble row.}
+\item{stat_func}{A function that computes summary statistics from a simulation result. Should accept a model object and return a named numeric vector or \code{\link[=tibble]{tibble()}} row.}
 
-\item{states}{Optional. A data frame or tibble of initial states. Each row corresponds to a complete model state e.g. for an SIR model each row has three columns}
+\item{states}{Optional. A data frame or \code{\link[=tibble]{tibble()}} of initial states. Each row corresponds to a complete model state e.g. for an SIR model each row has three columns}
 
 \item{tol}{A numeric tolerance (between 0 and 1) for the ABC rejection algorithm. Defaults to 0.1.}
 
 \item{method}{A character string indicating the ABC method to use. Defaults to \code{"rejection"}. Passed directly to \code{\link[abc:abc]{abc::abc()}}.}
 
 \item{seed}{An integer specifying the random seed for reproducibility. Defaults to 123.}
+
+\item{x}{An object of class \code{abc_stochastic_model}.}
+
+\item{...}{list of additional plot arguments.
+\code{param} - if \code{type} is "prior_posterior" then parameter to plot
+\code{state} - if \code{type} is "simulations" then state to plot}
 }
 \value{
 An object of class \code{"abc_stochastic_model"} containing:
@@ -43,6 +52,8 @@ An object of class \code{"abc_stochastic_model"} containing:
 drawn from the prior distribution.}
 \item{state}{Final state of model.}
 }
+
+A \code{ggplot} object
 }
 \description{
 Runs an Approximate Bayesian Computation (ABC) procedure using a stochastic model and a set of prior parameter draws.
@@ -58,6 +69,11 @@ This function performs ABC by:
 
 Parallelization is handled using \code{furrr::future_map()}, allowing reproducible simulation across parameter sets using a fixed seed.
 }
+\section{Methods (by generic)}{
+\itemize{
+\item \code{plot(abc_stochastic_model)}: Plot of either prior and posterior or projections
+
+}}
 \examples{
 reactions <- list(
   infection = list(

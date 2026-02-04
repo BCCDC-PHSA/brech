@@ -12,6 +12,9 @@ create_age_initial_conditions(sim_scenario, age_groups)
 
 \item{age_groups}{vector of age group labels}
 }
+\value{
+list with same structure as output of \code{load_model_params}
+}
 \description{
 Convert a vector of each state into a labeled state using
 \code{age_groups} labels
