@@ -54,7 +54,7 @@ be incorporated into <code><a href="projection_stochastic_model.html">projection
 
 
 <dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
-<dd><p>A data frame or tibble of prior parameter values. Each row
+<dd><p>A data frame or <code>tibble()</code> of prior parameter values. Each row
 should correspond to one simulation, and columns should match the parameter
 names expected by <code><a href="stochastic_model.html">update_parameters()</a></code>. If <code>NULL</code> then no parameters will
 be updated an are all inherited from <code>sm</code></p></dd>
@@ -65,6 +65,10 @@ be updated an are all inherited from <code>sm</code></p></dd>
 <code>NULL</code> then this is generated from the initial states in <code>sm</code></p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A <code>scenario_stochastic_model</code> object</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="abc_stochastic_model.html">abc_stochastic_model()</a></code></p></div>

@@ -7,7 +7,11 @@ If state doesn't exist e.g. &quot;I&quot; but has states &quot;I_{age}&quot; the
 will sum over all states first before plotting
 take the difference of column(s) that match on state state. This is
 useful for any cumulative columns e.g. INC and C by converted them into
-the incidence and case incidence respectively"><meta property="og:description" content="Runs forward projections from the posterior draws of a fitted
+the incidence and case incidence respectively
+For cumulative state variables such as cases (e.g., C_[0,1)), this function
+resets their values to 0 at a specified reference time (default is 0). This is
+useful when wanting to compute cumulative changes from a particular time point
+in a simulation or projection."><meta property="og:description" content="Runs forward projections from the posterior draws of a fitted
 abc_stochastic_model for a fixed number of time steps (default 30),
 using region-specific states and parameter sets. Each simulation is seeded
 for reproducibility and run in parallel.
@@ -15,7 +19,11 @@ If state doesn't exist e.g. &quot;I&quot; but has states &quot;I_{age}&quot; the
 will sum over all states first before plotting
 take the difference of column(s) that match on state state. This is
 useful for any cumulative columns e.g. INC and C by converted them into
-the incidence and case incidence respectively"><meta property="og:image" content="https://bccdc-phsa.github.io/brech/logo.png"></head><body>
+the incidence and case incidence respectively
+For cumulative state variables such as cases (e.g., C_[0,1)), this function
+resets their values to 0 at a specified reference time (default is 0). This is
+useful when wanting to compute cumulative changes from a particular time point
+in a simulation or projection."><meta property="og:image" content="https://bccdc-phsa.github.io/brech/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -59,6 +67,10 @@ will sum over all states first before plotting</p>
 <p>take the difference of column(s) that match on state <code>state</code>. This is
 useful for any cumulative columns e.g. <code>INC</code> and <code>C</code> by converted them into
 the incidence and case incidence respectively</p>
+<p>For cumulative state variables such as cases (e.g., <code>C_[0,1)</code>), this function
+resets their values to 0 at a specified reference time (default is 0). This is
+useful when wanting to compute cumulative changes from a particular time point
+in a simulation or projection.</p>
     </div>
 
     <div class="section level2">
@@ -72,7 +84,7 @@ the incidence and case incidence respectively</p>
 <span></span>
 <span><span class="fu">plot_projections</span><span class="op">(</span><span class="va">projection</span>, <span class="va">state</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">plot_projection_samples</span><span class="op">(</span><span class="va">projection</span>, <span class="va">state</span><span class="op">)</span></span>
+<span><span class="fu">plot_projection_samples</span><span class="op">(</span><span class="va">psm</span>, <span class="va">state</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">plot_projections_by_age_group</span><span class="op">(</span><span class="va">projection</span>, <span class="va">state</span><span class="op">)</span></span>
 <span></span>
@@ -94,7 +106,9 @@ the incidence and case incidence respectively</p>
 <span></span>
 <span><span class="fu">collapse_states</span><span class="op">(</span><span class="va">psm</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">difference_of_states</span><span class="op">(</span><span class="va">psm</span>, <span class="va">state</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">difference_of_states</span><span class="op">(</span><span class="va">psm</span>, <span class="va">state</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">reset_state</span><span class="op">(</span><span class="va">psm</span>, <span class="va">state</span>, reset_time <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -116,7 +130,8 @@ reproducibility. Defaults to <code>123</code>.</p></dd>
 
 
 <dt id="arg-psm">psm<a class="anchor" aria-label="anchor" href="#arg-psm"></a></dt>
-<dd><p>Object of class <code>projection_stochastic_model</code></p></dd>
+<dd><p>An object of class <code>projection_stochastic_model</code>, or a compatible
+data structure as accepted by <code>get_projection_dataframe()</code>.</p></dd>
 
 
 <dt id="arg-start-date">start_date<a class="anchor" aria-label="anchor" href="#arg-start-date"></a></dt>
@@ -138,7 +153,8 @@ and <code>type</code> either show individual trajectories "samples" or summarize
 
 
 <dt id="arg-state">state<a class="anchor" aria-label="anchor" href="#arg-state"></a></dt>
-<dd><p>character string e.g. "C"</p></dd>
+<dd><p>A character string specifying the prefix of the cumulative state variable
+to reset (e.g., <code>"C"</code> to match columns like <code>"C_[0,1)"</code>, <code>"C_[1,5)"</code>, etc.).</p></dd>
 
 
 <dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
@@ -151,6 +167,11 @@ and <code>type</code> either show individual trajectories "samples" or summarize
 
 <dt id="arg-index-cols">index_cols<a class="anchor" aria-label="anchor" href="#arg-index-cols"></a></dt>
 <dd><p>columns to preserve defaults to <code>c("time","date")</code></p></dd>
+
+
+<dt id="arg-reset-time">reset_time<a class="anchor" aria-label="anchor" href="#arg-reset-time"></a></dt>
+<dd><p>A numeric value indicating the time at which to reset the cumulative
+values back to zero. Defaults to 0.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -166,9 +187,15 @@ posterior draws and days, including any parameter updates appended as columns.</
 
 
 </dl><p>An object of class <code>projection_stochastic_model</code></p>
-<p>tibble</p>
-<p>tibble</p>
-<p>tibble</p>
+<p>A <code>ggplot</code> object.</p>
+<p>A <code>ggplot</code> object.</p>
+<p>A <code>tibble()</code> with columns <code>by_cols</code>, <code>quantile</code>, and quantile values per variable.</p>
+<p>A <code>tibble()</code> with <code>date</code>, <code>time</code>, <code>age_group</code>, <code>quantile</code>, <code>values</code>.</p>
+<p><code>tibble()</code></p>
+<p>A <code>tibble()</code> in long format with <code>age_group</code> and the <code>state</code> column.</p>
+<p>A <code>tibble()</code> with additional collapsed prefix columns</p>
+<p>A <code>tibble()</code> with columns of differences per simulation trajectory</p>
+<p>A <code>tibble()</code> with the same structure as the original projection data frame</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -178,13 +205,84 @@ posterior state and parameter sets, then runs simulations in parallel using
 fixed time frame, interpolated to daily resolution, and combined
 into a single projection data frame.</p>
     </div>
+    <div class="section level2">
+    <h2 id="methods-by-generic-">Methods (by generic)<a class="anchor" aria-label="anchor" href="#methods-by-generic-"></a></h2>
+
+<ul><li><p><code>plot(projection_stochastic_model)</code>: Plot projections (quantiles or sample trajectories).</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a></h2>
+
+<ul><li><p><code>add_projection_date()</code>: Add date to projection using a <code>start_date</code></p></li>
+<li><p><code>plot_projections()</code>: Plot quantile bands (q2.5%, q25%, median, q75%, q97.5%) for a state.</p></li>
+<li><p><code>plot_projection_samples()</code>: Plot individual sample trajectories, coloured by per-sample peak magnitude.</p></li>
+<li><p><code>plot_projections_by_age_group()</code>: Faceted quantile plots by age group for a given state.</p></li>
+<li><p><code>create_projection_quantiles()</code>: Compute per-time quantiles across simulations for all numeric columns.</p></li>
+<li><p><code>projection_quantiles_by_age_group()</code>: Compute quantiles by age group for a state (e.g., <code>"C"</code>).</p></li>
+<li><p><code>projection_by_age_group()</code>: Long-format projection <code>tibble()</code> with an <code>age_group</code> column for a state prefix.</p></li>
+<li><p><code>create_age_group_column()</code>: Create an <code>age_group</code> column by gathering state_AGE columns for a prefix state.</p></li>
+<li><p><code>collapse_states()</code>: Sum age-stratified columns into their shared prefix (e.g., <code>C_[*]</code> → <code>C</code>).</p></li>
+<li><p><code>difference_of_states()</code>: Take first differences for all columns starting with a state prefix.</p></li>
+<li><p><code>reset_state()</code>: Convert cumulative state variables back to zero at a reference time</p></li>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span>  <span class="va">projection</span> <span class="op">&lt;-</span> <span class="va">psm</span> <span class="op">|&gt;</span> <span class="fu">projection_quantiles_by_age_group</span><span class="op">(</span><span class="st">"C"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">plot_projections_by_age_group</span><span class="op">(</span><span class="va">projection</span>,<span class="st">"C"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  infection_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I_1"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    rate <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">p</span>,<span class="va">t</span><span class="op">)</span><span class="op">{</span><span class="va">p</span><span class="op">$</span><span class="va">beta</span><span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
+<span class="r-in"><span>  infection_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I_2"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    rate <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">p</span>,<span class="va">t</span><span class="op">)</span><span class="op">{</span><span class="fl">0.5</span><span class="op">*</span><span class="va">p</span><span class="op">$</span><span class="va">beta</span><span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">example_scenario</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  initial_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>I_1 <span class="op">=</span> <span class="fl">0</span>, I_2 <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  sim_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>T <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="stochastic_model.html">stochastic_model</a></span><span class="op">(</span><span class="va">reactions</span>,<span class="va">example_scenario</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, length.out <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">asm</span> <span class="op">&lt;-</span> <span class="fu"><a href="scenario_stochastic_model.html">scenario_stochastic_model</a></span><span class="op">(</span><span class="va">sm</span>, parameters <span class="op">=</span> <span class="va">parameters</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">psm</span> <span class="op">&lt;-</span> <span class="fu">projection_stochastic_model</span><span class="op">(</span><span class="va">asm</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">projection</span> <span class="op">&lt;-</span> <span class="va">psm</span> <span class="op">|&gt;</span> <span class="fu">projection_quantiles_by_age_group</span><span class="op">(</span><span class="st">"I"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_projections_by_age_group</span><span class="op">(</span><span class="va">projection</span>,<span class="st">"I"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="projection_stochastic_model-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="va">reactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  infection <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    rate <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">p</span>,<span class="va">t</span><span class="op">)</span><span class="op">{</span><span class="va">p</span><span class="op">$</span><span class="va">beta</span><span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">example_scenario</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  initial_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>I <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  sim_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>T <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="stochastic_model.html">stochastic_model</a></span><span class="op">(</span><span class="va">reactions</span>,<span class="va">example_scenario</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, length.out <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">asm</span> <span class="op">&lt;-</span> <span class="fu"><a href="scenario_stochastic_model.html">scenario_stochastic_model</a></span><span class="op">(</span><span class="va">sm</span>, parameters <span class="op">=</span> <span class="va">parameters</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">psm</span> <span class="op">&lt;-</span> <span class="fu">projection_stochastic_model</span><span class="op">(</span><span class="va">asm</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Reset cumulative cases to 0 at time 5</span></span></span>
+<span class="r-in"><span><span class="fu">reset_state</span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"C"</span>, reset_time <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 310 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time      I  beta sim_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     0 0        0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     1 0.061<span style="text-decoration: underline;">4</span>   0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     2 0.123    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     3 0.184    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     4 0.246    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     5 0.307    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     6 0.369    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     7 0.430    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     8 0.491    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     9 0.553    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 300 more rows</span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

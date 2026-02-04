@@ -48,7 +48,10 @@
 <span>  tol <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"rejection"</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">123</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for class 'abc_stochastic_model'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -60,7 +63,7 @@
 
 
 <dt id="arg-priors">priors<a class="anchor" aria-label="anchor" href="#arg-priors"></a></dt>
-<dd><p>A data frame or tibble of prior parameter values. Each row should correspond to one simulation, and columns should match the parameter names expected by <code><a href="stochastic_model.html">update_parameters()</a></code>.</p></dd>
+<dd><p>A data frame or <code>tibble()</code> of prior parameter values. Each row should correspond to one simulation, and columns should match the parameter names expected by <code><a href="stochastic_model.html">update_parameters()</a></code>.</p></dd>
 
 
 <dt id="arg-target">target<a class="anchor" aria-label="anchor" href="#arg-target"></a></dt>
@@ -68,11 +71,11 @@
 
 
 <dt id="arg-stat-func">stat_func<a class="anchor" aria-label="anchor" href="#arg-stat-func"></a></dt>
-<dd><p>A function that computes summary statistics from a simulation result. Should accept a model object and return a named numeric vector or tibble row.</p></dd>
+<dd><p>A function that computes summary statistics from a simulation result. Should accept a model object and return a named numeric vector or <code>tibble()</code> row.</p></dd>
 
 
 <dt id="arg-states">states<a class="anchor" aria-label="anchor" href="#arg-states"></a></dt>
-<dd><p>Optional. A data frame or tibble of initial states. Each row corresponds to a complete model state e.g. for an SIR model each row has three columns</p></dd>
+<dd><p>Optional. A data frame or <code>tibble()</code> of initial states. Each row corresponds to a complete model state e.g. for an SIR model each row has three columns</p></dd>
 
 
 <dt id="arg-tol">tol<a class="anchor" aria-label="anchor" href="#arg-tol"></a></dt>
@@ -85,6 +88,16 @@
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>An integer specifying the random seed for reproducibility. Defaults to 123.</p></dd>
+
+
+<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>An object of class <code>abc_stochastic_model</code>.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>list of additional plot arguments.
+<code>param</code> - if <code>type</code> is "prior_posterior" then parameter to plot
+<code>state</code> - if <code>type</code> is "simulations" then state to plot</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -109,7 +122,8 @@ drawn from the prior distribution.</p></dd>
 <dd><p>Final state of model.</p></dd>
 
 
-</dl></div>
+</dl><p>A <code>ggplot</code> object</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>This function performs ABC by:</p><ol><li><p>Sampling parameter combinations from <code>priors</code></p></li>
@@ -118,20 +132,34 @@ drawn from the prior distribution.</p></dd>
 <li><p>Comparing simulated statistics to <code>target</code> using the <code><a href="https://rdrr.io/pkg/abc/man/abc.html" class="external-link">abc::abc()</a></code> function</p></li>
 </ol><p>Parallelization is handled using <code><a href="https://furrr.futureverse.org/reference/future_map.html" class="external-link">furrr::future_map()</a></code>, allowing reproducible simulation across parameter sets using a fixed seed.</p>
     </div>
+    <div class="section level2">
+    <h2 id="methods-by-generic-">Methods (by generic)<a class="anchor" aria-label="anchor" href="#methods-by-generic-"></a></h2>
+
+<ul><li><p><code>plot(abc_stochastic_model)</code>: Plot of either prior and posterior or projections</p></li>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  infection <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  rate <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">p</span>,<span class="va">t</span><span class="op">)</span><span class="op">{</span> <span class="va">p</span><span class="op">$</span><span class="va">beta</span> <span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">example_scenario</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  initial_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>I <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  sim_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>T <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="stochastic_model.html">stochastic_model</a></span><span class="op">(</span><span class="va">reactions</span>,<span class="va">example_scenario</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, length.out <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">target</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>mean_infected <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">target</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>total_infected <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">abc_result</span> <span class="op">&lt;-</span> <span class="fu">abc_stochastic_model</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  stochastic_model <span class="op">=</span> <span class="va">my_model</span>,</span></span>
+<span class="r-in"><span>  <span class="va">sm</span>,</span></span>
 <span class="r-in"><span>  priors <span class="op">=</span> <span class="va">priors</span>,</span></span>
 <span class="r-in"><span>  target <span class="op">=</span> <span class="va">target</span>,</span></span>
-<span class="r-in"><span>  stat_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>mean_infected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">I</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  stat_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">sim</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>total_infected <span class="op">=</span> <span class="va">sim</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sim</span><span class="op">)</span>, <span class="st">"I"</span><span class="op">]</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  tol <span class="op">=</span> <span class="fl">0.2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

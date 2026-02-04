@@ -16,6 +16,9 @@ abc_stochastic_model(
   method = "rejection",
   seed = 123
 )
+
+# S3 method for class 'abc_stochastic_model'
+plot(x, ...)
 ```
 
 ## Arguments
@@ -26,7 +29,7 @@ abc_stochastic_model(
 
 - priors:
 
-  A data frame or tibble of prior parameter values. Each row should
+  A data frame or `tibble()` of prior parameter values. Each row should
   correspond to one simulation, and columns should match the parameter
   names expected by
   [`update_parameters()`](https://bccdc-phsa.github.io/brech/reference/stochastic_model.md).
@@ -40,11 +43,11 @@ abc_stochastic_model(
 
   A function that computes summary statistics from a simulation result.
   Should accept a model object and return a named numeric vector or
-  tibble row.
+  `tibble()` row.
 
 - states:
 
-  Optional. A data frame or tibble of initial states. Each row
+  Optional. A data frame or `tibble()` of initial states. Each row
   corresponds to a complete model state e.g. for an SIR model each row
   has three columns
 
@@ -63,6 +66,16 @@ abc_stochastic_model(
 
   An integer specifying the random seed for reproducibility. Defaults to
   123.
+
+- x:
+
+  An object of class `abc_stochastic_model`.
+
+- ...:
+
+  list of additional plot arguments. `param` - if `type` is
+  "prior_posterior" then parameter to plot `state` - if `type` is
+  "simulations" then state to plot
 
 ## Value
 
@@ -95,6 +108,8 @@ An object of class `"abc_stochastic_model"` containing:
 
   Final state of model.
 
+A `ggplot` object
+
 ## Details
 
 This function performs ABC by:
@@ -113,18 +128,32 @@ Parallelization is handled using
 allowing reproducible simulation across parameter sets using a fixed
 seed.
 
+## Methods (by generic)
+
+- `plot(abc_stochastic_model)`: Plot of either prior and posterior or
+  projections
+
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+reactions <- list(
+  infection = list(
+  transition = c("I" = +1),
+  rate = function(x,p,t){ p$beta })
+)
+example_scenario <- list(
+  params = list(beta = 0.1),
+  initial_states = list(I = 0),
+  sim_args = list(T = 10)
+)
+sm <- stochastic_model(reactions,example_scenario)
 priors <- expand.grid(beta = seq(0.1, 0.5, length.out = 10))
-target <- c(mean_infected = 50)
+target <- c(total_infected = 50)
 abc_result <- abc_stochastic_model(
-  stochastic_model = my_model,
+  sm,
   priors = priors,
   target = target,
-  stat_func = function(sim) data.frame(mean_infected = mean(sim$I)),
+  stat_func = function(sim) data.frame(total_infected = sim[nrow(sim), "I"]),
   tol = 0.2
 )
-} # }
 ```

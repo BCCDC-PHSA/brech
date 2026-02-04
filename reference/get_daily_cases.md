@@ -20,7 +20,7 @@ get_daily_cases(r)
 
 ## Value
 
-A tibble with two columns:
+A `tibble()` with two columns:
 
 - day:
 

@@ -13,3 +13,7 @@ load_model_params(file = NULL)
 - file:
 
   file path to yaml
+
+## Value
+
+list of model parameters

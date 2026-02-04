@@ -19,6 +19,10 @@ create_age_initial_conditions(sim_scenario, age_groups)
 
   vector of age group labels
 
+## Value
+
+list with same structure as output of `load_model_params`
+
 ## Examples
 
 ``` r

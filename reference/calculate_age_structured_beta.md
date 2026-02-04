@@ -29,4 +29,4 @@ calculate_age_structured_beta(sm, contact_matrix, population_sizes, R0)
 
 ## Value
 
-numeric
+numeric of infectious rate beta

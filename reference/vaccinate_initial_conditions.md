@@ -19,3 +19,7 @@ vaccinate_initial_conditions(sim_scenario, vaccine_rate)
   numeric proportion vaccinated. Can be a numeric vector if using age
   groups. If named then vaccinates according to each age group with
   format "S\_{age_group}"
+
+## Value
+
+list with same structure as output of `load_model_params`

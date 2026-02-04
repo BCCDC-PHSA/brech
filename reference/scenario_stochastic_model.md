@@ -17,7 +17,7 @@ scenario_stochastic_model(sm, parameters = NULL, states = NULL)
 
 - parameters:
 
-  A data frame or tibble of prior parameter values. Each row should
+  A data frame or `tibble()` of prior parameter values. Each row should
   correspond to one simulation, and columns should match the parameter
   names expected by
   [`update_parameters()`](https://bccdc-phsa.github.io/brech/reference/stochastic_model.md).
@@ -28,6 +28,10 @@ scenario_stochastic_model(sm, parameters = NULL, states = NULL)
 
   A data frame where each row represents an initial state. If `NULL`
   then this is generated from the initial states in `sm`
+
+## Value
+
+A `scenario_stochastic_model` object
 
 ## See also
 
