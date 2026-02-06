@@ -38,8 +38,7 @@ abc_stochastic_model(
 \item{x}{An object of class \code{abc_stochastic_model}.}
 
 \item{...}{list of additional plot arguments.
-\code{param} - if \code{type} is "prior_posterior" then parameter to plot
-\code{state} - if \code{type} is "simulations" then state to plot}
+\code{param} - if not \code{NULL} then parameter to plot}
 }
 \value{
 An object of class \code{"abc_stochastic_model"} containing:

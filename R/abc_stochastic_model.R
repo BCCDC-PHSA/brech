@@ -152,6 +152,9 @@ plot_prior_posterior <- function(prior_values,posterior_values,true_value = NULL
 #'   tol = 0.2
 #' )
 #'
+#' # plot prior posterior comparison for beta
+#' plot(abc_result, param = "beta")
+#'
 #' @importFrom furrr future_map furrr_options
 #' @importFrom purrr pmap map reduce
 #' @importFrom dplyr bind_rows
@@ -205,8 +208,8 @@ abc_stochastic_model <- function(sm,priors,target,stat_func,
                   tol=tol,method=method)
 
   # get posterior values
-  final_state <- final_state[fit$region,]
-  posteriors <- priors[fit$region,]
+  final_state <- final_state[fit$region, , drop = FALSE]
+  posteriors <- priors[fit$region, , drop = FALSE]
   indexes <- seq_len(length(fit$region))[fit$region]
 
   structure(list("model" = sm, "fit" = fit,
@@ -220,8 +223,7 @@ abc_stochastic_model <- function(sm,priors,target,stat_func,
 #' Plot of either prior and posterior or projections
 #' @param x An object of class \code{abc_stochastic_model}.
 #' @param ... list of additional plot arguments.
-#' `param` - if `type` is "prior_posterior" then parameter to plot
-#' `state` - if `type` is "simulations" then state to plot
+#' `param` - if not `NULL` then parameter to plot
 #' @return A `ggplot` object
 #' @export
 plot.abc_stochastic_model <- function(x, ...){
@@ -229,15 +231,12 @@ plot.abc_stochastic_model <- function(x, ...){
   asm <- x
   args <- list(...)
   param <- args$param
-  state <- args$state
 
   if(!is.null(param)){
     plot_prior_posterior(dplyr::pull(asm$priors,param),
                          dplyr::pull(asm$posteriors,param),
                          true_value = asm$model$params[[param]])
-  }else if(!is.null(state)){
-    plot_projections(asm$simulation,state)
   }else{
-    stop(paste0("plot type not recognized"))
+    stop(paste0("requires a `param` argument"))
   }
 }

@@ -35,6 +35,52 @@
 #' @importFrom purrr pmap reduce
 #' @importFrom dplyr bind_cols bind_rows
 #' @name projection_stochastic_model
+#' @examples
+#' # create stochastic model
+#' reactions <- list(
+#'   infection_1 = list(
+#'     transition = c("I_1" = +1, "C" = +1),
+#'     rate = function(x,p,t){p$beta}
+#'   ),
+#'   infection_2 = list(
+#'     transition = c("I_2" = +1, "C" = +1),
+#'     rate = function(x,p,t){0.5*p$beta}
+#'   )
+#' )
+#' example_scenario <- list(
+#'   params = list(beta = 0.1),
+#'   initial_states = list(I_1 = 0, I_2 = 0, C = 0),
+#'   sim_args = list(T = 10)
+#' )
+#' sm <- stochastic_model(reactions,example_scenario)
+#'
+#' # project a scenario across a range of a single parameter value
+#' parameters <- data.frame(beta = seq(0.1, 0.5, length.out = 10))
+#' asm <- scenario_stochastic_model(sm, parameters = parameters)
+#' psm <- projection_stochastic_model(asm)
+#'
+#' # Add projection date
+#' psm <- add_projection_date(psm, "2026-01-01")
+#'
+#' # plots
+#' plot(psm, state = "C", type = "quantiles")
+#' plot_projections(psm, state = "C")
+#' plot_projection_samples(psm, state = "C")
+#'
+#' # plots by age group
+#' projection <- projection_quantiles_by_age_group(psm, "I")
+#' plot_projections_by_age_group(projection,"I")
+#'
+#' # projection transformation and summaries
+#' create_projection_quantiles(psm)
+#' projection_quantiles_by_age_group(psm, state = "I")
+#' projection_by_age_group(psm, state = "I")
+#' create_age_group_column(psm, state = "I")
+#' collapse_states(psm)
+#' difference_of_states(psm, state = "C")
+#'
+#' # Reset cumulative cases to 0 at time 5
+#' reset_state(psm, state = "C", reset_time = 5)
 #' @export
 projection_stochastic_model <- function(asm, project_time = 30,
                                         seed = 123){
@@ -206,28 +252,6 @@ plot_projection_samples <- function(psm,state){
 #'
 #' @param projection projection grouped using [projection_quantiles_by_age_group]
 #' @param state state to plot
-#' @examples
-#' reactions <- list(
-#'   infection_1 = list(
-#'     transition = c("I_1" = +1),
-#'     rate = function(x,p,t){p$beta}
-#'   ),
-#'   infection_2 = list(
-#'     transition = c("I_2" = +1),
-#'     rate = function(x,p,t){0.5*p$beta}
-#'   )
-#' )
-#' example_scenario <- list(
-#'   params = list(beta = 0.1),
-#'   initial_states = list(I_1 = 0, I_2 = 0),
-#'   sim_args = list(T = 10)
-#' )
-#' sm <- stochastic_model(reactions,example_scenario)
-#' parameters <- data.frame(beta = seq(0.1, 0.5, length.out = 10))
-#' asm <- scenario_stochastic_model(sm, parameters = parameters)
-#' psm <- projection_stochastic_model(asm)
-#' projection <- psm |> projection_quantiles_by_age_group("I")
-#' plot_projections_by_age_group(projection,"I")
 #' @export
 plot_projections_by_age_group <- function(projection,state){
   age_group <- q0.025 <- q0.25 <- q0.5 <- q0.75 <- q0.975 <- NULL
@@ -412,25 +436,6 @@ difference_of_states <- function(psm,state){
 #' values back to zero. Defaults to 0.
 #'
 #' @return A [tibble()] with the same structure as the original projection data frame
-#' @examples
-#' reactions <- list(
-#'   infection = list(
-#'     transition = c("I" = +1),
-#'     rate = function(x,p,t){p$beta}
-#'   )
-#' )
-#' example_scenario <- list(
-#'   params = list(beta = 0.1),
-#'   initial_states = list(I = 0),
-#'   sim_args = list(T = 10)
-#' )
-#' sm <- stochastic_model(reactions,example_scenario)
-#' parameters <- data.frame(beta = seq(0.1, 0.5, length.out = 10))
-#' asm <- scenario_stochastic_model(sm, parameters = parameters)
-#' psm <- projection_stochastic_model(asm)
-#'
-#' # Reset cumulative cases to 0 at time 5
-#' reset_state(psm, state = "C", reset_time = 5)
 #'
 #' @export
 reset_state <- function(psm, state, reset_time = 0){
