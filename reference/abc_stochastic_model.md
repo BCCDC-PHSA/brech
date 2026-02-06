@@ -73,9 +73,8 @@ plot(x, ...)
 
 - ...:
 
-  list of additional plot arguments. `param` - if `type` is
-  "prior_posterior" then parameter to plot `state` - if `type` is
-  "simulations" then state to plot
+  list of additional plot arguments. `param` - if not `NULL` then
+  parameter to plot
 
 ## Value
 

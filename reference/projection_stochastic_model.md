@@ -206,58 +206,155 @@ into a single projection data frame.
 ## Examples
 
 ``` r
+# create stochastic model
 reactions <- list(
   infection_1 = list(
-    transition = c("I_1" = +1),
+    transition = c("I_1" = +1, "C" = +1),
     rate = function(x,p,t){p$beta}
   ),
   infection_2 = list(
-    transition = c("I_2" = +1),
+    transition = c("I_2" = +1, "C" = +1),
     rate = function(x,p,t){0.5*p$beta}
   )
 )
 example_scenario <- list(
   params = list(beta = 0.1),
-  initial_states = list(I_1 = 0, I_2 = 0),
+  initial_states = list(I_1 = 0, I_2 = 0, C = 0),
   sim_args = list(T = 10)
 )
 sm <- stochastic_model(reactions,example_scenario)
+
+# project a scenario across a range of a single parameter value
 parameters <- data.frame(beta = seq(0.1, 0.5, length.out = 10))
 asm <- scenario_stochastic_model(sm, parameters = parameters)
 psm <- projection_stochastic_model(asm)
-projection <- psm |> projection_quantiles_by_age_group("I")
+
+# Add projection date
+psm <- add_projection_date(psm, "2026-01-01")
+
+# plots
+plot(psm, state = "C", type = "quantiles")
+
+plot_projections(psm, state = "C")
+
+plot_projection_samples(psm, state = "C")
+#> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+#> ℹ Please use `linewidth` instead.
+#> ℹ The deprecated feature was likely used in the brech package.
+#>   Please report the issue at <https://github.com/BCCDC-PHSA/brech/issues>.
+
+
+# plots by age group
+projection <- projection_quantiles_by_age_group(psm, "I")
 plot_projections_by_age_group(projection,"I")
 
-reactions <- list(
-  infection = list(
-    transition = c("I" = +1),
-    rate = function(x,p,t){p$beta}
-  )
-)
-example_scenario <- list(
-  params = list(beta = 0.1),
-  initial_states = list(I = 0),
-  sim_args = list(T = 10)
-)
-sm <- stochastic_model(reactions,example_scenario)
-parameters <- data.frame(beta = seq(0.1, 0.5, length.out = 10))
-asm <- scenario_stochastic_model(sm, parameters = parameters)
-psm <- projection_stochastic_model(asm)
+
+# projection transformation and summaries
+create_projection_quantiles(psm)
+#> # A tibble: 155 × 7
+#>     time date          I_1   I_2     C  beta quantile
+#>    <int> <date>      <dbl> <dbl> <dbl> <dbl>    <dbl>
+#>  1     0 2026-01-01 0      0     0      0.11    0.025
+#>  2     0 2026-01-01 0      0     0      0.2     0.25 
+#>  3     0 2026-01-01 0      0     0      0.3     0.5  
+#>  4     0 2026-01-01 0      0     0      0.4     0.75 
+#>  5     0 2026-01-01 0      0     0      0.49    0.975
+#>  6     1 2026-01-02 0      0     0.117  0.11    0.025
+#>  7     1 2026-01-02 0.0230 0     0.404  0.2     0.25 
+#>  8     1 2026-01-02 0.602  0.193 1.14   0.3     0.5  
+#>  9     1 2026-01-02 1      0.841 1.39   0.4     0.75 
+#> 10     1 2026-01-02 1.27   1.92  2.14   0.49    0.975
+#> # ℹ 145 more rows
+projection_quantiles_by_age_group(psm, state = "I")
+#> # A tibble: 310 × 5
+#>    date        time age_group quantile values
+#>    <date>     <int> <chr>        <dbl>  <dbl>
+#>  1 2026-01-01     0 1            0.025      0
+#>  2 2026-01-01     0 1            0.25       0
+#>  3 2026-01-01     0 1            0.5        0
+#>  4 2026-01-01     0 1            0.75       0
+#>  5 2026-01-01     0 1            0.975      0
+#>  6 2026-01-01     0 2            0.025      0
+#>  7 2026-01-01     0 2            0.25       0
+#>  8 2026-01-01     0 2            0.5        0
+#>  9 2026-01-01     0 2            0.75       0
+#> 10 2026-01-01     0 2            0.975      0
+#> # ℹ 300 more rows
+projection_by_age_group(psm, state = "I")
+#> # A tibble: 620 × 4
+#>    date        time age_group      I
+#>    <date>     <int> <chr>      <dbl>
+#>  1 2026-01-01     0 1         0     
+#>  2 2026-01-01     0 2         0     
+#>  3 2026-01-02     1 1         0.0921
+#>  4 2026-01-02     1 2         0     
+#>  5 2026-01-03     2 1         0.184 
+#>  6 2026-01-03     2 2         0     
+#>  7 2026-01-04     3 1         0.276 
+#>  8 2026-01-04     3 2         0     
+#>  9 2026-01-05     4 1         0.369 
+#> 10 2026-01-05     4 2         0     
+#> # ℹ 610 more rows
+create_age_group_column(psm, state = "I")
+#> # A tibble: 620 × 4
+#>    date        time age_group      I
+#>    <date>     <int> <chr>      <dbl>
+#>  1 2026-01-01     0 1         0     
+#>  2 2026-01-01     0 2         0     
+#>  3 2026-01-02     1 1         0.0921
+#>  4 2026-01-02     1 2         0     
+#>  5 2026-01-03     2 1         0.184 
+#>  6 2026-01-03     2 2         0     
+#>  7 2026-01-04     3 1         0.276 
+#>  8 2026-01-04     3 2         0     
+#>  9 2026-01-05     4 1         0.369 
+#> 10 2026-01-05     4 2         0     
+#> # ℹ 610 more rows
+collapse_states(psm)
+#> # A tibble: 310 × 7
+#>     time    I_1   I_2      C  beta date            I
+#>    <int>  <dbl> <dbl>  <dbl> <dbl> <date>      <dbl>
+#>  1     0 0          0 0        0.1 2026-01-01 0     
+#>  2     1 0.0921     0 0.0921   0.1 2026-01-02 0.0921
+#>  3     2 0.184      0 0.184    0.1 2026-01-03 0.184 
+#>  4     3 0.276      0 0.276    0.1 2026-01-04 0.276 
+#>  5     4 0.369      0 0.369    0.1 2026-01-05 0.369 
+#>  6     5 0.461      0 0.461    0.1 2026-01-06 0.461 
+#>  7     6 0.553      0 0.553    0.1 2026-01-07 0.553 
+#>  8     7 0.645      0 0.645    0.1 2026-01-08 0.645 
+#>  9     8 0.737      0 0.737    0.1 2026-01-09 0.737 
+#> 10     9 0.829      0 0.829    0.1 2026-01-10 0.829 
+#> # ℹ 300 more rows
+difference_of_states(psm, state = "C")
+#> # A tibble: 310 × 7
+#>     time    I_1   I_2      C  beta date       sim_id
+#>    <int>  <dbl> <dbl>  <dbl> <dbl> <date>      <int>
+#>  1     0 0          0 0        0.1 2026-01-01      1
+#>  2     1 0.0921     0 0.0921   0.1 2026-01-02      1
+#>  3     2 0.184      0 0.184    0.1 2026-01-03      1
+#>  4     3 0.276      0 0.276    0.1 2026-01-04      1
+#>  5     4 0.369      0 0.369    0.1 2026-01-05      1
+#>  6     5 0.461      0 0.461    0.1 2026-01-06      1
+#>  7     6 0.553      0 0.553    0.1 2026-01-07      1
+#>  8     7 0.645      0 0.645    0.1 2026-01-08      1
+#>  9     8 0.737      0 0.737    0.1 2026-01-09      1
+#> 10     9 0.829      0 0.829    0.1 2026-01-10      1
+#> # ℹ 300 more rows
 
 # Reset cumulative cases to 0 at time 5
 reset_state(psm, state = "C", reset_time = 5)
-#> # A tibble: 310 × 4
-#>     time      I  beta sim_id
-#>    <int>  <dbl> <dbl>  <int>
-#>  1     0 0        0.1      1
-#>  2     1 0.0614   0.1      1
-#>  3     2 0.123    0.1      1
-#>  4     3 0.184    0.1      1
-#>  5     4 0.246    0.1      1
-#>  6     5 0.307    0.1      1
-#>  7     6 0.369    0.1      1
-#>  8     7 0.430    0.1      1
-#>  9     8 0.491    0.1      1
-#> 10     9 0.553    0.1      1
+#> # A tibble: 310 × 7
+#>     time    I_1   I_2      C  beta date       sim_id
+#>    <int>  <dbl> <dbl>  <dbl> <dbl> <date>      <int>
+#>  1     0 0          0 0        0.1 2026-01-01      1
+#>  2     1 0.0921     0 0.0921   0.1 2026-01-02      1
+#>  3     2 0.184      0 0.184    0.1 2026-01-03      1
+#>  4     3 0.276      0 0.276    0.1 2026-01-04      1
+#>  5     4 0.369      0 0.369    0.1 2026-01-05      1
+#>  6     5 0.461      0 0.461    0.1 2026-01-06      1
+#>  7     6 0.553      0 0.553    0.1 2026-01-07      1
+#>  8     7 0.645      0 0.645    0.1 2026-01-08      1
+#>  9     8 0.737      0 0.737    0.1 2026-01-09      1
+#> 10     9 0.829      0 0.829    0.1 2026-01-10      1
 #> # ℹ 300 more rows
 ```

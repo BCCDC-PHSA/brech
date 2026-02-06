@@ -228,61 +228,157 @@ into a single projection data frame.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">reactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># create stochastic model</span></span></span>
+<span class="r-in"><span><span class="va">reactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  infection_1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I_1"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I_1"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    rate <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">p</span>,<span class="va">t</span><span class="op">)</span><span class="op">{</span><span class="va">p</span><span class="op">$</span><span class="va">beta</span><span class="op">}</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  infection_2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I_2"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I_2"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span>, <span class="st">"C"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    rate <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">p</span>,<span class="va">t</span><span class="op">)</span><span class="op">{</span><span class="fl">0.5</span><span class="op">*</span><span class="va">p</span><span class="op">$</span><span class="va">beta</span><span class="op">}</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">example_scenario</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  initial_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>I_1 <span class="op">=</span> <span class="fl">0</span>, I_2 <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  initial_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>I_1 <span class="op">=</span> <span class="fl">0</span>, I_2 <span class="op">=</span> <span class="fl">0</span>, C <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  sim_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>T <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="stochastic_model.html">stochastic_model</a></span><span class="op">(</span><span class="va">reactions</span>,<span class="va">example_scenario</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># project a scenario across a range of a single parameter value</span></span></span>
 <span class="r-in"><span><span class="va">parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, length.out <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">asm</span> <span class="op">&lt;-</span> <span class="fu"><a href="scenario_stochastic_model.html">scenario_stochastic_model</a></span><span class="op">(</span><span class="va">sm</span>, parameters <span class="op">=</span> <span class="va">parameters</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">psm</span> <span class="op">&lt;-</span> <span class="fu">projection_stochastic_model</span><span class="op">(</span><span class="va">asm</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">projection</span> <span class="op">&lt;-</span> <span class="va">psm</span> <span class="op">|&gt;</span> <span class="fu">projection_quantiles_by_age_group</span><span class="op">(</span><span class="st">"I"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">plot_projections_by_age_group</span><span class="op">(</span><span class="va">projection</span>,<span class="st">"I"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add projection date</span></span></span>
+<span class="r-in"><span><span class="va">psm</span> <span class="op">&lt;-</span> <span class="fu">add_projection_date</span><span class="op">(</span><span class="va">psm</span>, <span class="st">"2026-01-01"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># plots</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"C"</span>, type <span class="op">=</span> <span class="st">"quantiles"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="projection_stochastic_model-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="va">reactions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  infection <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    transition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"I"</span> <span class="op">=</span> <span class="op">+</span><span class="fl">1</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    rate <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">p</span>,<span class="va">t</span><span class="op">)</span><span class="op">{</span><span class="va">p</span><span class="op">$</span><span class="va">beta</span><span class="op">}</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">example_scenario</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  initial_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>I <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sim_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>T <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="stochastic_model.html">stochastic_model</a></span><span class="op">(</span><span class="va">reactions</span>,<span class="va">example_scenario</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, length.out <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">asm</span> <span class="op">&lt;-</span> <span class="fu"><a href="scenario_stochastic_model.html">scenario_stochastic_model</a></span><span class="op">(</span><span class="va">sm</span>, parameters <span class="op">=</span> <span class="va">parameters</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">psm</span> <span class="op">&lt;-</span> <span class="fu">projection_stochastic_model</span><span class="op">(</span><span class="va">asm</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_projections</span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"C"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="projection_stochastic_model-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">plot_projection_samples</span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"C"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use `linewidth` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">brech</span> package.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue at <span style="color: #0000BB; font-style: italic;">&lt;https://github.com/BCCDC-PHSA/brech/issues&gt;</span>.</span>
+<span class="r-plt img"><img src="projection_stochastic_model-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># plots by age group</span></span></span>
+<span class="r-in"><span><span class="va">projection</span> <span class="op">&lt;-</span> <span class="fu">projection_quantiles_by_age_group</span><span class="op">(</span><span class="va">psm</span>, <span class="st">"I"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_projections_by_age_group</span><span class="op">(</span><span class="va">projection</span>,<span class="st">"I"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="projection_stochastic_model-4.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># projection transformation and summaries</span></span></span>
+<span class="r-in"><span><span class="fu">create_projection_quantiles</span><span class="op">(</span><span class="va">psm</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 155 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time date          I_1   I_2     C  beta quantile</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     0 2026-01-01 0      0     0      0.11    0.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     0 2026-01-01 0      0     0      0.2     0.25 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     0 2026-01-01 0      0     0      0.3     0.5  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     0 2026-01-01 0      0     0      0.4     0.75 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     0 2026-01-01 0      0     0      0.49    0.975</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     1 2026-01-02 0      0     0.117  0.11    0.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     1 2026-01-02 0.023<span style="text-decoration: underline;">0</span> 0     0.404  0.2     0.25 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     1 2026-01-02 0.602  0.193 1.14   0.3     0.5  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     1 2026-01-02 1      0.841 1.39   0.4     0.75 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     1 2026-01-02 1.27   1.92  2.14   0.49    0.975</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 145 more rows</span></span>
+<span class="r-in"><span><span class="fu">projection_quantiles_by_age_group</span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"I"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 310 × 5</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    date        time age_group quantile values</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2026-01-01     0 1            0.025      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2026-01-01     0 1            0.25       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2026-01-01     0 1            0.5        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2026-01-01     0 1            0.75       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2026-01-01     0 1            0.975      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2026-01-01     0 2            0.025      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2026-01-01     0 2            0.25       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2026-01-01     0 2            0.5        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2026-01-01     0 2            0.75       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2026-01-01     0 2            0.975      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 300 more rows</span></span>
+<span class="r-in"><span><span class="fu">projection_by_age_group</span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"I"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 620 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    date        time age_group      I</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2026-01-01     0 1         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2026-01-01     0 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2026-01-02     1 1         0.092<span style="text-decoration: underline;">1</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2026-01-02     1 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2026-01-03     2 1         0.184 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2026-01-03     2 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2026-01-04     3 1         0.276 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2026-01-04     3 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2026-01-05     4 1         0.369 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2026-01-05     4 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 610 more rows</span></span>
+<span class="r-in"><span><span class="fu">create_age_group_column</span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"I"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 620 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    date        time age_group      I</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 2026-01-01     0 1         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 2026-01-01     0 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 2026-01-02     1 1         0.092<span style="text-decoration: underline;">1</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 2026-01-02     1 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 2026-01-03     2 1         0.184 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 2026-01-03     2 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2026-01-04     3 1         0.276 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2026-01-04     3 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2026-01-05     4 1         0.369 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2026-01-05     4 2         0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 610 more rows</span></span>
+<span class="r-in"><span><span class="fu">collapse_states</span><span class="op">(</span><span class="va">psm</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 310 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time    I_1   I_2      C  beta date            I</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     0 0          0 0        0.1 2026-01-01 0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     1 0.092<span style="text-decoration: underline;">1</span>     0 0.092<span style="text-decoration: underline;">1</span>   0.1 2026-01-02 0.092<span style="text-decoration: underline;">1</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     2 0.184      0 0.184    0.1 2026-01-03 0.184 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     3 0.276      0 0.276    0.1 2026-01-04 0.276 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     4 0.369      0 0.369    0.1 2026-01-05 0.369 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     5 0.461      0 0.461    0.1 2026-01-06 0.461 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     6 0.553      0 0.553    0.1 2026-01-07 0.553 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     7 0.645      0 0.645    0.1 2026-01-08 0.645 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     8 0.737      0 0.737    0.1 2026-01-09 0.737 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     9 0.829      0 0.829    0.1 2026-01-10 0.829 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 300 more rows</span></span>
+<span class="r-in"><span><span class="fu">difference_of_states</span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"C"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 310 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time    I_1   I_2      C  beta date       sim_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     0 0          0 0        0.1 2026-01-01      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     1 0.092<span style="text-decoration: underline;">1</span>     0 0.092<span style="text-decoration: underline;">1</span>   0.1 2026-01-02      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     2 0.184      0 0.184    0.1 2026-01-03      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     3 0.276      0 0.276    0.1 2026-01-04      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     4 0.369      0 0.369    0.1 2026-01-05      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     5 0.461      0 0.461    0.1 2026-01-06      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     6 0.553      0 0.553    0.1 2026-01-07      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     7 0.645      0 0.645    0.1 2026-01-08      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     8 0.737      0 0.737    0.1 2026-01-09      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     9 0.829      0 0.829    0.1 2026-01-10      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 300 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Reset cumulative cases to 0 at time 5</span></span></span>
 <span class="r-in"><span><span class="fu">reset_state</span><span class="op">(</span><span class="va">psm</span>, state <span class="op">=</span> <span class="st">"C"</span>, reset_time <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 310 × 4</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     time      I  beta sim_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     0 0        0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     1 0.061<span style="text-decoration: underline;">4</span>   0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     2 0.123    0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     3 0.184    0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     4 0.246    0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     5 0.307    0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     6 0.369    0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     7 0.430    0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     8 0.491    0.1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     9 0.553    0.1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 310 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     time    I_1   I_2      C  beta date       sim_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     0 0          0 0        0.1 2026-01-01      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     1 0.092<span style="text-decoration: underline;">1</span>     0 0.092<span style="text-decoration: underline;">1</span>   0.1 2026-01-02      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     2 0.184      0 0.184    0.1 2026-01-03      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     3 0.276      0 0.276    0.1 2026-01-04      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     4 0.369      0 0.369    0.1 2026-01-05      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     5 0.461      0 0.461    0.1 2026-01-06      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     6 0.553      0 0.553    0.1 2026-01-07      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     7 0.645      0 0.645    0.1 2026-01-08      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     8 0.737      0 0.737    0.1 2026-01-09      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     9 0.829      0 0.829    0.1 2026-01-10      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 300 more rows</span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
